@@ -15,19 +15,16 @@
             poppins: ['Poppins', 'sans-serif'],
           },
           colors: {
-            // Light Mode
             'light-bg': '#f7f8fa',
             'light-surface': '#ffffff',
             'light-text': '#1f2937',
             'light-subtle': '#6b7280',
-            'light-highlight': '#e0e7ff', // Indigo-100 for light mode highlights
-            // Dark Mode
+            'light-highlight': '#e0e7ff',
             'dark-bg': '#111827',
             'dark-surface': '#1f2937',
             'dark-text': '#f3f4f6',
             'dark-subtle': '#9ca3af',
-            'dark-highlight': '#3730a3', // Indigo-800 for dark mode highlights
-            // Piano key colors
+            'dark-highlight': '#3730a3',
             'piano-white': '#ffffff',
             'piano-black': '#374151',
             'piano-white-dark': '#4b5563',
@@ -45,24 +42,24 @@
     }
     .modal-placeholder {
       font-style: italic;
-      color: #9ca3af; /* Tailwind gray-400 */
+      color: #9ca3af;
     }
     .dark .modal-placeholder {
-      color: #4b5563; /* Tailwind gray-600 */
+      color: #4b5563;
     }
     #song-modal {
       transition: opacity 300ms ease-in-out;
     }
-    #song-modal > div > div { /* The direct child, which is the modal content container */
+    #song-modal > div > div {
       transition: transform 300ms ease-in-out;
     }
     .filter-btn-active {
-      background-color: #4f46e5 !important; /* Indigo-600 */
+      background-color: #4f46e5 !important;
       color: #ffffff !important;
       border-color: #4f46e5 !important;
     }
     .favorite-btn.favorited svg {
-        fill: #ef4444; /* red-500 */
+        fill: #ef4444;
         color: #ef4444;
     }
     .sr-only {
@@ -76,7 +73,7 @@
         white-space: nowrap;
         border-width: 0;
     }
-    .song-card:focus-visible { /* Using focus-visible for better accessibility */
+    .song-card:focus-visible {
         outline: 2px solid #4f46e5;
         outline-offset: 2px;
         box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
@@ -84,18 +81,18 @@
     .difficulty-dots {
         font-size: 1.2em;
         line-height: 1;
-        letter-spacing: 0.1em; /* Add some spacing between dots */
+        letter-spacing: 0.1em;
     }
     .piano-key-display {
         display: inline-block;
         margin-left: 10px;
         vertical-align: middle;
-        border: 1px solid #e5e7eb; /* Light border for the SVG container */
+        border: 1px solid #e5e7eb;
         border-radius: 4px;
-        overflow: hidden; /* Clip keys if they somehow exceed bounds */
+        overflow: hidden;
     }
     .dark .piano-key-display {
-        border-color: #374151; /* Darker border for dark mode */
+        border-color: #374151;
     }
     .chord-item-container {
         display: flex;
@@ -180,7 +177,7 @@
       <div id="transpose-controls" class="my-4 p-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-light-bg dark:bg-dark-bg shadow-sm">
         <div class="flex items-center justify-between mb-2">
           <h4 class="text-md font-semibold text-light-text dark:text-dark-text">Transpose Chords:</h4>
-          <p id="transpose-indicator" class="text-sm text-light-subtle dark:text-dark-subtle italic"></p> {/* Comment removed */}
+          <p id="transpose-indicator" class="text-sm text-light-subtle dark:text-dark-subtle italic"></p>
         </div>
         <div class="flex items-center justify-center space-x-2 sm:space-x-3">
           <button id="transpose-down-btn" class="px-3 py-2 rounded-md bg-indigo-500 text-white font-semibold text-xs sm:text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-light-surface dark:focus:ring-offset-dark-surface focus:ring-indigo-400 flex items-center gap-1" aria-label="Transpose down one semitone">
@@ -210,11 +207,10 @@
   </div>
 
 <script>
-    // --- CONFIGURATION ---
     const AppConfig = {
         genres: ['All', 'My Favorites', 'Recently Viewed', 'Pop', 'Classic Rock', 'Alternative & Indie', 'Grunge', 'R&B / Soul', 'Soundtrack', 'Hindi Songs'],
-        difficulties: ["Beginner", "Intermediate", "Advanced"], // Order matters for difficulty dots
-        genericChords: [ // Used for songs in popularAdditions without specified chords
+        difficulties: ["Beginner", "Intermediate", "Advanced"],
+        genericChords: [
             { "Verse": ["C", "G", "Am", "F"], "Chorus": ["F", "C", "G", "C"] },
             { "Verse": ["G", "D", "Em", "C"], "Chorus": ["G", "D", "C", "G"] },
             { "Verse": ["Am", "F", "C", "G"], "Chorus": ["F", "G", "C", "Am"] },
@@ -224,26 +220,25 @@
         notesSharp: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
         notesFlat:  ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
         chordTypes: {
-            '': [0, 4, 7],         // Major (default)
-            'm': [0, 3, 7],        // Minor
-            'maj': [0, 4, 7],      // Major (explicit, e.g. Cmaj)
-            '7': [0, 4, 7, 10],    // Dominant 7th
-            'maj7': [0, 4, 7, 11], // Major 7th
-            'm7': [0, 3, 7, 10],   // Minor 7th
-            'dim': [0, 3, 6],      // Diminished
-            'dim7': [0, 3, 6, 9],  // Diminished 7th
-            'aug': [0, 4, 8],      // Augmented
-            'sus4': [0, 5, 7],     // Suspended 4th
-            'sus2': [0, 2, 7],     // Suspended 2nd
-            '6': [0, 4, 7, 9],     // Major 6th (e.g., C6)
-            'm6': [0, 3, 7, 9],    // Minor 6th (e.g., Cm6)
-            'add9': [0, 4, 7, 14], // Added 9th (Root, 3rd, 5th, 9th) (14 semitones = octave + major 2nd)
-            'm7b5': [0, 3, 6, 10], // Minor 7th flat 5 (Half-diminished)
-            '7sus4': [0, 5, 7, 10],// 7th Suspended 4th
+            '': [0, 4, 7],
+            'm': [0, 3, 7],
+            'maj': [0, 4, 7],
+            '7': [0, 4, 7, 10],
+            'maj7': [0, 4, 7, 11],
+            'm7': [0, 3, 7, 10],
+            'dim': [0, 3, 6],
+            'dim7': [0, 3, 6, 9],
+            'aug': [0, 4, 8],
+            'sus4': [0, 5, 7],
+            'sus2': [0, 2, 7],
+            '6': [0, 4, 7, 9],
+            'm6': [0, 3, 7, 9],
+            'add9': [0, 4, 7, 14],
+            'm7b5': [0, 3, 6, 10],
+            '7sus4': [0, 5, 7, 10],
         },
-        transposeLimit: 11, // NEW: Max semitones up or down
+        transposeLimit: 11,
         initialSongData: [
-            // POP SONGS
             { id: 23, title: "Imagine", artist: "John Lennon", genre: "Pop", difficulty: "Beginner", bpm: 76, chords: { "Verse": ["C", "Cmaj7", "F"], "Chorus": ["F", "G", "C", "E7"] } },
             { id: 25, title: "Someone Like You", artist: "Adele", genre: "Pop", difficulty: "Intermediate", bpm: 67, chords: { "Verse": ["A", "E", "F#m", "D"], "Chorus": ["A", "E", "F#m", "D"] } },
             { id: 31, title: "Perfect", artist: "Ed Sheeran", genre: "Pop", difficulty: "Beginner", bpm: 95, chords: { "Verse": ["G", "Em", "C", "D"], "Chorus": ["G", "Em", "C", "D"] } },
@@ -254,7 +249,6 @@
             { id: 61, title: "Shake It Off", artist: "Taylor Swift", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Am", "C", "G"], "Chorus": ["Am", "C", "G", "F"] } },
             { id: 62, title: "Happy", artist: "Pharrell Williams", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Fm", "Db", "Ab", "Eb"], "Chorus": ["Fm", "Db", "Ab", "Eb"] } },
             { id: 64, title: "Royals", artist: "Lorde", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["D", "C", "G"], "Chorus": ["D", "C", "G"] } },
-            // CLASSIC ROCK SONGS
             { id: 1, title: "Bohemian Rhapsody", artist: "Queen", genre: "Classic Rock", difficulty: "Advanced", bpm: 72, chords: { "Intro": ["Bb", "Gm", "Eb", "F", "Bb6"], "Ballad": ["Bb", "Gm", "Cm", "F", "Eb/G", "F/A"], "Opera": ["A", "D", "G", "C#dim", "F#7"] } },
             { id: 14, title: "Stairway to Heaven", artist: "Led Zeppelin", genre: "Classic Rock", difficulty: "Advanced", chords: { "Intro": ["Am", "G#aug", "C/G", "D/F#", "Fmaj7", "G/B", "Am"], "Verse": ["Am", "G", "C", "D", "Fmaj7"] } },
             { id: 16, title: "Sweet Child O' Mine", artist: "Guns N' Roses", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["D", "C", "G"], "Chorus": ["A", "C", "D", "G"] } },
@@ -265,13 +259,11 @@
             { id: 44, title: "Hotel California", artist: "Eagles", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["Am", "E7", "G", "D", "F", "C", "Dm", "E"], "Chorus": ["F", "C", "E7", "Am"] } },
             { id: 66, title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["D", "C", "G"], "Chorus": ["D", "C", "G"] } },
             { id: 67, title: "More Than a Feeling", artist: "Boston", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["G", "Cadd9", "Em7", "D"], "Chorus": ["G", "Cadd9", "Em7", "D"] } },
-            // GRUNGE
             { id: 6, title: "Smells Like Teen Spirit", artist: "Nirvana", genre: "Grunge", difficulty: "Intermediate", chords: { "Verse": ["Fm", "Bb", "G#", "C#"] } },
             { id: 8, title: "Black Hole Sun", artist: "Soundgarden", genre: "Grunge", difficulty: "Advanced", chords: { "Verse": ["A", "G", "D", "E", "Cmaj7/G"], "Chorus": ["E", "A", "D", "G", "C"] } },
             { id: 11, title: "Plush", artist: "Stone Temple Pilots", genre: "Grunge", difficulty: "Intermediate", chords: { "Verse": ["G", "D/F#", "Em", "Cadd9"] } },
             { id: 12, title: "Alive", artist: "Pearl Jam", genre: "Grunge", difficulty: "Intermediate", chords: { "Verse": ["A", "G", "D", "E"] } },
             { id: 71, title: "Lithium", artist: "Nirvana", genre: "Grunge", difficulty: "Beginner", chords: { "Verse": ["E", "G#", "C#m", "A", "C", "D"] } },
-            // ALTERNATIVE & INDIE
             { id: 17, title: "Everlong", artist: "Foo Fighters", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Verse": ["Dmaj7", "Bm7", "G", "Asus4"] } },
             { id: 27, title: "Clocks", artist: "Coldplay", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Verse": ["Eb", "Bbm7", "Fm7"] } },
             { id: 38, title: "Mr. Brightside", artist: "The Killers", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Chorus": ["Db", "Ab", "Bbm", "Gb"] } },
@@ -280,20 +272,17 @@
             { id: 88, title: "Yellow", artist: "Coldplay", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["G", "D", "Cadd9", "Em7"] } },
             { id: 93, title: "Zombie", artist: "The Cranberries", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["Em", "C", "G", "D"] } },
             { id: 96, title: "Riptide", artist: "Vance Joy", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["Am", "G", "C", "F"] } },
-            // R&B / SOUL
             { id: 19, title: "Stand by Me", artist: "Ben E. King", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Verse": ["G", "Em", "C", "D"] } },
             { id: 46, title: "Ain't No Sunshine", artist: "Bill Withers", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Verse": ["Am7", "Em", "G", "Dm7"] } },
             { id: 47, title: "If I Ain't Got You", artist: "Alicia Keys", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Verse": ["Gmaj7", "Em7", "Am7", "D7", "Bm7"] } },
             { id: 100, title: "Respect", artist: "Aretha Franklin", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Verse": ["G", "F", "C", "Bb"] } },
             { id: 101, title: "Superstition", artist: "Stevie Wonder", genre: "R&B / Soul", difficulty: "Advanced", chords: { "Verse": ["Ebm7", "Ab7", "Dbmaj7", "Gbmaj7"] } },
-            // SOUNDTRACK
             { id: 29, title: "What a Wonderful World", artist: "Louis Armstrong", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["F", "Am", "Bb", "C7", "Gm7"] } },
             { id: 33, title: "Let It Go", artist: "Idina Menzel (from Frozen)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["Em", "C", "G", "D", "Am"] } },
             { id: 50, title: "My Heart Will Go On", artist: "Celine Dion (from Titanic)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Verse": ["E", "B", "A", "C#m", "F#m"] } },
             { id: 52, title: "Shallow", artist: "Lady Gaga & Bradley Cooper (A Star Is Born)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Verse": ["Em", "D/F#", "G", "C", "Am7"] } },
             { id: 112, title: "Over the Rainbow", artist: "Judy Garland (from The Wizard of Oz)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["C", "Em", "F", "G7", "Am"] } },
             { id: 121, title: "You've Got a Friend in Me", artist: "Randy Newman (from Toy Story)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["C", "G7", "E7", "Am", "D7", "F"] } },
-            // HINDI SONGS
             { id: 125, title: "Kal Ho Naa Ho", artist: "Sonu Nigam", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Verse": ["C", "G", "Am", "F", "Dm"] } },
             { id: 126, title: "Tujhe Dekha Toh", artist: "Lata Mangeshkar, Kumar Sanu", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Verse": ["G", "C", "D", "Em"] } },
             { id: 130, title: "Tum Hi Ho", artist: "Arijit Singh", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Verse": ["Em", "C", "G", "D", "Am"] } },
@@ -390,7 +379,6 @@
         }
     };
 
-    // --- DOM ELEMENTS ---
     const DOM = {
         songGrid: document.getElementById('song-grid'),
         modal: document.getElementById('song-modal'),
@@ -416,7 +404,6 @@
         transposeUpBtn: document.getElementById('transpose-up-btn')
     };
 
-    // --- APPLICATION STATE ---
     let AppState = {
         currentGenreFilter: 'All',
         currentDifficultyFilter: 'All',
@@ -429,7 +416,6 @@
         focusedCardIndex: -1
     };
 
-    // --- MUSIC THEORY HELPERS ---
     const MusicTheory = {
         getNoteIndex: function(noteName) {
             let i = AppConfig.notesSharp.indexOf(noteName);
@@ -502,7 +488,6 @@
         }
     };
 
-    // --- CHORD TRANSPOSITION ---
     const ChordTransposer = {
         transposeNote: function(note, semitones) {
             const noteIndex = MusicTheory.getNoteIndex(note);
@@ -527,7 +512,6 @@
         }
     };
 
-    // --- PIANO KEY SVG DISPLAY ---
     const PianoKeyDisplay = {
         createSVG: function(notesToHighlight, isDarkMode) {
             const svgNS = "http://www.w3.org/2000/svg";
@@ -576,7 +560,6 @@
         }
     };
 
-    // --- DATA MANAGEMENT ---
     const DataManager = {
         augmentSongData: function(initialSongs, popularAdditionsByGenre, genericChordsList, difficultyLevels) {
             const augmentedSongs = [...initialSongs];
@@ -620,7 +603,6 @@
         }
     };
 
-    // --- LOCAL STORAGE MANAGERS ---
     const FavoritesManager = {
         load: function() {
             const storedFavorites = localStorage.getItem('pianoChordFavorites_v2');
@@ -675,7 +657,6 @@
         }
     };
 
-    // --- FILTERING LOGIC ---
     const FilterManager = {
         createButtons: function(container, items, currentFilterStateProperty) {
             container.innerHTML = '';
@@ -709,7 +690,6 @@
         }
     };
 
-    // --- SONG CARD AND LIST RENDERING ---
     const SongRenderer = {
         getDifficultyVisuals: function(difficulty) {
             const difficultyIndex = AppConfig.difficulties.indexOf(difficulty);
@@ -801,7 +781,6 @@
         }
     };
 
-    // --- MODAL MANAGEMENT ---
     const ModalManager = {
         renderChords: function(songId, transposeOffset) {
             const song = DataManager.getSongById(songId);
@@ -850,22 +829,20 @@
                 DOM.modalChords.appendChild(sectionBlock);
             });
         },
-        updateTransposeButtonStates: function() { // NEW function to manage button disabled states and styles
+        updateTransposeButtonStates: function() {
             const offset = AppState.currentTransposeOffset;
             const limit = AppConfig.transposeLimit;
 
-            // Up Button
             if (offset >= limit) {
                 DOM.transposeUpBtn.disabled = true;
                 DOM.transposeUpBtn.classList.add('opacity-50', 'cursor-not-allowed');
-                DOM.transposeUpBtn.classList.remove('hover:bg-indigo-600', 'dark:hover:bg-indigo-700'); // Use actual configured dark hover color
+                DOM.transposeUpBtn.classList.remove('hover:bg-indigo-600', 'dark:hover:bg-indigo-700');
             } else {
                 DOM.transposeUpBtn.disabled = false;
                 DOM.transposeUpBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 DOM.transposeUpBtn.classList.add('hover:bg-indigo-600', 'dark:hover:bg-indigo-700');
             }
 
-            // Down Button
             if (offset <= -limit) {
                 DOM.transposeDownBtn.disabled = true;
                 DOM.transposeDownBtn.classList.add('opacity-50', 'cursor-not-allowed');
@@ -875,9 +852,6 @@
                 DOM.transposeDownBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 DOM.transposeDownBtn.classList.add('hover:bg-indigo-600', 'dark:hover:bg-indigo-700');
             }
-             // Ensure hover classes match the initial setup from HTML if you have more specific ones there.
-            // For dark mode, the original HTML has dark:bg-indigo-700 dark:hover:bg-indigo-800.
-            // Let's ensure consistency:
             if (!DOM.transposeUpBtn.disabled) {
                 DOM.transposeUpBtn.classList.add('dark:bg-indigo-700', 'dark:hover:bg-indigo-800');
             } else {
@@ -898,20 +872,20 @@
                 DOM.transposeIndicator.textContent = `${sign}${AppState.currentTransposeOffset} semitone${Math.abs(AppState.currentTransposeOffset) === 1 ? '' : 's'}`;
                 DOM.transposeIndicator.className = 'text-sm font-semibold text-indigo-700 dark:text-indigo-300';
             }
-            this.updateTransposeButtonStates(); // Call to update button states
+            this.updateTransposeButtonStates();
         },
         open: function(songId) {
             const song = DataManager.getSongById(songId);
             if (!song) return;
             AppState.activeElementBeforeModal = document.activeElement;
             AppState.currentModalSongId = song.id;
-            AppState.currentTransposeOffset = 0; // Reset transpose on new song
+            AppState.currentTransposeOffset = 0;
             RecentlyViewedManager.add(song.id);
             DOM.modal.querySelector('div > div').scrollTop = 0;
             DOM.modalTitle.textContent = song.title;
             DOM.modalArtist.textContent = `By ${song.artist}`;
             DOM.transposeAnnouncer.textContent = "";
-            this.updateTransposeIndicator(); // This will also set initial button states
+            this.updateTransposeIndicator();
             if (song.bpm) {
                 DOM.modalBpm.textContent = `Tempo: ${song.bpm} BPM`;
                 DOM.modalBpm.classList.remove('hidden');
@@ -950,15 +924,14 @@
 
             const newOffset = AppState.currentTransposeOffset + semitones;
 
-            // Enforce transpose limits
             if (newOffset > AppConfig.transposeLimit || newOffset < -AppConfig.transposeLimit) {
-                this.updateTransposeButtonStates(); // Ensure buttons reflect the unchangable state
-                return; // Do not transpose further
+                this.updateTransposeButtonStates();
+                return;
             }
 
             AppState.currentTransposeOffset = newOffset;
             this.renderChords(AppState.currentModalSongId, AppState.currentTransposeOffset);
-            this.updateTransposeIndicator(); // This will update text and button states
+            this.updateTransposeIndicator();
 
             let offsetText = AppState.currentTransposeOffset === 0 ? "Original Key" :
                              (AppState.currentTransposeOffset > 0 ? `+${AppState.currentTransposeOffset}` : AppState.currentTransposeOffset.toString()) +
@@ -969,12 +942,11 @@
             if (AppState.currentModalSongId === null) return;
             AppState.currentTransposeOffset = 0;
             this.renderChords(AppState.currentModalSongId, AppState.currentTransposeOffset);
-            this.updateTransposeIndicator(); // This will update text and button states
+            this.updateTransposeIndicator();
             DOM.transposeAnnouncer.textContent = "Chords reset to original key.";
         }
     };
 
-    // --- THEME MANAGEMENT ---
     const ThemeManager = {
         init: function() {
             const isDarkMode = localStorage.getItem('darkMode_v2') === 'true';
@@ -987,23 +959,21 @@
             DOM.toggleDarkBtn.setAttribute('aria-pressed', isDark.toString());
             if (AppState.currentModalSongId !== null && !DOM.modal.classList.contains('pointer-events-none')) {
                 ModalManager.renderChords(AppState.currentModalSongId, AppState.currentTransposeOffset);
-                 // Re-apply button states if theme change affects their appearance (though Tailwind should handle this)
                 ModalManager.updateTransposeButtonStates();
             }
         }
     };
 
-    // --- EVENT LISTENERS ---
     const EventListeners = {
         initModalKeys: function() {
             document.addEventListener('keydown', (e) => {
                 if (DOM.modal.classList.contains('pointer-events-none')) return;
                 if (e.key === '=' || e.key === '+') {
                     e.preventDefault();
-                    ModalManager.handleTranspose(1); // Limit handled within function
+                    ModalManager.handleTranspose(1);
                 } else if (e.key === '-' || e.key === '_') {
                     e.preventDefault();
-                    ModalManager.handleTranspose(-1); // Limit handled within function
+                    ModalManager.handleTranspose(-1);
                 } else if (e.key === '0' || e.key === 'r' || e.key === 'R') {
                     if(document.activeElement !== DOM.searchBar) {
                         e.preventDefault();
@@ -1105,7 +1075,6 @@
         }
     };
 
-    // --- APPLICATION INITIALIZER ---
     const AppInitializer = {
         init: function() {
             ThemeManager.init();
