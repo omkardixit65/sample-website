@@ -27,6 +27,13 @@
             'dark-text': '#f3f4f6',
             'dark-subtle': '#9ca3af',
             'dark-highlight': '#3730a3', // Indigo-800 for dark mode highlights
+            // Piano key colors
+            'piano-white': '#ffffff',
+            'piano-black': '#374151',
+            'piano-white-dark': '#4b5563',
+            'piano-black-dark': '#1f2937',
+            'piano-highlight': '#4f46e5',
+            'piano-highlight-dark': '#818cf8',
           }
         },
       },
@@ -46,7 +53,7 @@
     #song-modal {
       transition: opacity 300ms ease-in-out;
     }
-    #song-modal > div {
+    #song-modal > div > div { /* The direct child, which is the modal content container */
       transition: transform 300ms ease-in-out;
     }
     .filter-btn-active {
@@ -57,6 +64,44 @@
     .favorite-btn.favorited svg {
         fill: #ef4444; /* red-500 */
         color: #ef4444;
+    }
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+    }
+    .song-card:focus-visible { /* Using focus-visible for better accessibility */
+        outline: 2px solid #4f46e5;
+        outline-offset: 2px;
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+    }
+    .difficulty-dots {
+        font-size: 1.2em;
+        line-height: 1;
+        letter-spacing: 0.1em; /* Add some spacing between dots */
+    }
+    .piano-key-display {
+        display: inline-block;
+        margin-left: 10px;
+        vertical-align: middle;
+        border: 1px solid #e5e7eb; /* Light border for the SVG container */
+        border-radius: 4px;
+        overflow: hidden; /* Clip keys if they somehow exceed bounds */
+    }
+    .dark .piano-key-display {
+        border-color: #374151; /* Darker border for dark mode */
+    }
+    .chord-item-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 40px;
     }
   </style>
 </head>
@@ -75,29 +120,29 @@
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <svg class="h-5 w-5 text-light-subtle dark:text-dark-subtle" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
-            <input id="search-bar" type="text" placeholder="Search songs or artists..." class="w-full pl-11 pr-10 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-light-surface dark:bg-dark-surface text-light-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow">
-            <button id="clear-search-btn" class="absolute inset-y-0 right-0 pr-3 flex items-center text-light-subtle dark:text-dark-subtle hover:text-light-text dark:hover:text-dark-text transition-colors hidden">
+            <input id="search-bar" type="text" placeholder="Search songs or artists..." class="w-full pl-11 pr-10 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-light-surface dark:bg-dark-surface text-light-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow" aria-label="Search songs or artists">
+            <button id="clear-search-btn" class="absolute inset-y-0 right-0 pr-3 flex items-center text-light-subtle dark:text-dark-subtle hover:text-light-text dark:hover:text-dark-text transition-colors hidden" aria-label="Clear search">
               <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
             </button>
           </div>
-          <button id="toggle-dark" class="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-light-surface dark:bg-dark-surface hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2">
+          <button id="toggle-dark" class="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-light-surface dark:bg-dark-surface hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2" aria-pressed="false" aria-label="Toggle dark mode">
             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
             <span class="sm:hidden">Toggle Mode</span>
           </button>
         </div>
         <div class="space-y-3">
           <label class="block text-sm font-medium text-light-subtle dark:text-dark-subtle text-center sm:text-left">Filter by Genre:</label>
-          <div id="filter-container" class="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
-          </div>
+          <div id="filter-container" class="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3" role="group" aria-label="Genre Filters">
+            </div>
         </div>
         <div class="space-y-3">
             <label class="block text-sm font-medium text-light-subtle dark:text-dark-subtle text-center sm:text-left">Filter by Difficulty:</label>
-            <div id="difficulty-filter-container" class="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
-            </div>
+            <div id="difficulty-filter-container" class="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3" role="group" aria-label="Difficulty Filters">
+              </div>
         </div>
       </div>
 
-      <div id="song-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div id="song-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" tabindex="0" aria-label="List of songs. Use arrow keys to navigate.">
         </div>
        <div id="no-results" class="hidden text-center py-16">
           <p class="text-xl font-medium text-light-subtle dark:text-dark-subtle">🤔 No songs found...</p>
@@ -118,19 +163,40 @@
 
   </div>
 
-  <div id="song-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none">
+  <div id="song-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none" role="dialog" aria-modal="true" aria-labelledby="modal-song-title">
     <div class="bg-light-surface dark:bg-dark-surface w-full max-w-2xl rounded-xl shadow-2xl p-6 md:p-8 relative transform scale-95 text-light-text dark:text-dark-text overflow-y-auto max-h-[90vh]">
-      <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-light-text dark:hover:text-dark-text transition text-2xl z-10">✖</button>
+      <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-light-text dark:hover:text-dark-text transition text-2xl z-10" aria-label="Close modal">✖</button>
+      <div id="transpose-announcer" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+
       <div class="flex justify-between items-start mb-1">
         <h2 id="modal-song-title" class="text-3xl font-bold"></h2>
-        <button id="modal-favorite-btn" class="favorite-btn p-2 rounded-full hover:bg-light-highlight dark:hover:bg-dark-highlight transition-colors">
+        <button id="modal-favorite-btn" class="favorite-btn p-2 rounded-full hover:bg-light-highlight dark:hover:bg-dark-highlight transition-colors" aria-label="Add to favorites">
           <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
         </button>
       </div>
-      <p id="modal-song-artist" class="text-lg text-light-subtle dark:text-dark-subtle mb-2 italic"></p>
-      <p id="modal-song-bpm" class="text-sm text-light-subtle dark:text-dark-subtle mb-6"></p>
-      
-      <div id="modal-song-chords" class="space-y-6 text-base"></div>
+      <p id="modal-song-artist" class="text-lg text-light-subtle dark:text-dark-subtle mb-1 italic"></p>
+      <p id="modal-song-bpm" class="text-sm text-light-subtle dark:text-dark-subtle mb-4"></p>
+
+      <div id="transpose-controls" class="my-4 p-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-light-bg dark:bg-dark-bg shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <h4 class="text-md font-semibold text-light-text dark:text-dark-text">Transpose Chords:</h4>
+          <p id="transpose-indicator" class="text-sm text-light-subtle dark:text-dark-subtle italic"></p> {/* Comment removed */}
+        </div>
+        <div class="flex items-center justify-center space-x-2 sm:space-x-3">
+          <button id="transpose-down-btn" class="px-3 py-2 rounded-md bg-indigo-500 text-white font-semibold text-xs sm:text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-light-surface dark:focus:ring-offset-dark-surface focus:ring-indigo-400 flex items-center gap-1" aria-label="Transpose down one semitone">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" /></svg>
+            <span class="hidden sm:inline">Down</span><span class="sm:hidden">-</span>
+          </button>
+          <button id="transpose-reset-btn" class="px-3 py-2 rounded-md bg-gray-400 hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-700 text-white font-semibold text-xs sm:text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-light-surface dark:focus:ring-offset-dark-surface focus:ring-gray-300" aria-label="Reset transposition to original key">
+            Reset
+          </button>
+          <button id="transpose-up-btn" class="px-3 py-2 rounded-md bg-indigo-500 text-white font-semibold text-xs sm:text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-light-surface dark:focus:ring-offset-dark-surface focus:ring-indigo-400 flex items-center gap-1" aria-label="Transpose up one semitone">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+            <span class="hidden sm:inline">Up</span><span class="sm:hidden">+</span>
+          </button>
+        </div>
+      </div>
+      <div id="modal-song-chords" class="space-y-3 text-base mt-6"></div>
 
       <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
         <h4 class="text-lg font-semibold mb-3 text-light-text dark:text-dark-text">Share this song:</h4>
@@ -143,84 +209,98 @@
     </div>
   </div>
 
-  <script>
-    // Initial set of songs
-    let initialSongData = [
-        // POP SONGS (Existing examples)
-        { id: 23, title: "Imagine", artist: "John Lennon", genre: "Pop", difficulty: "Beginner", bpm: 76, chords: { "Verse": ["C", "Cmaj7", "F"], "Chorus": ["F", "G", "C", "E7"] } },
-        { id: 25, title: "Someone Like You", artist: "Adele", genre: "Pop", difficulty: "Intermediate", bpm: 67, chords: { "Verse": ["A", "E", "F#m", "D"], "Chorus": ["A", "E", "F#m", "D"] } },
-        { id: 31, title: "Perfect", artist: "Ed Sheeran", genre: "Pop", difficulty: "Beginner", bpm: 95, chords: { "Verse": ["G", "Em", "C", "D"], "Chorus": ["G", "Em", "C", "D"] } },
-        { id: 55, title: "Shape of You", artist: "Ed Sheeran", genre: "Pop", chords: { "Verse": ["C#m", "F#m", "A", "B"], "Chorus": ["C#m", "F#m", "A", "B"] } },
-        { id: 57, title: "Blinding Lights", artist: "The Weeknd", genre: "Pop", chords: { "Verse": ["Fm", "Cm", "Eb", "Bb"], "Chorus": ["Fm", "Cm", "Eb", "Bb"] } },
-        { id: 59, title: "Watermelon Sugar", artist: "Harry Styles", genre: "Pop", chords: { "Verse": ["Dm", "Am", "C", "G"], "Chorus": ["Dm", "Am", "C", "G"] } },
-        { id: 60, title: "Bad Guy", artist: "Billie Eilish", genre: "Pop", chords: { "Verse": ["Em", "D", "G"], "Chorus": ["Em", "G", "Am"] } },
-        { id: 61, title: "Shake It Off", artist: "Taylor Swift", genre: "Pop", chords: { "Verse": ["Am", "C", "G"], "Chorus": ["Am", "C", "G", "F"] } },
-        { id: 62, title: "Happy", artist: "Pharrell Williams", genre: "Pop", chords: { "Verse": ["Fm", "Db", "Ab", "Eb"], "Chorus": ["Fm", "Db", "Ab", "Eb"] } },
-        { id: 64, title: "Royals", artist: "Lorde", genre: "Pop", chords: { "Verse": ["D", "C", "G"], "Chorus": ["D", "C", "G"] } },
-
-        // CLASSIC ROCK SONGS (Existing examples)
-        { id: 1, title: "Bohemian Rhapsody", artist: "Queen", genre: "Classic Rock", difficulty: "Advanced", bpm: 72, chords: { "Intro": ["Bb", "Gm", "Eb", "F"], "Ballad": ["Bb", "Gm", "Cm", "F"] } },
-        { id: 14, title: "Stairway to Heaven", artist: "Led Zeppelin", genre: "Classic Rock", difficulty: "Advanced", chords: { "Intro": ["Am", "G", "C", "D", "F"], "Verse": ["Am", "G", "C", "D"] } },
-        { id: 16, title: "Sweet Child O' Mine", artist: "Guns N' Roses", genre: "Classic Rock", chords: { "Verse": ["D", "C", "G"], "Chorus": ["A", "C", "D", "G"] } },
-        { id: 18, title: "Knockin' on Heaven's Door", artist: "Bob Dylan", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["G", "D", "Am"], "Chorus": ["G", "D", "C"] } },
-        { id: 20, title: "Hey Jude", artist: "The Beatles", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["F", "C", "C7", "F"], "Outro": ["F", "Eb", "Bb", "F"] } },
-        { id: 22, title: "Let It Be", artist: "The Beatles", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["C", "G", "Am", "F"], "Chorus": ["F", "C", "G", "C"] } },
-        { id: 43, title: "Piano Man", artist: "Billy Joel", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["C", "G", "Am", "G", "F", "C", "G"], "Chorus": ["F", "C", "G", "C"] } },
-        { id: 44, title: "Hotel California", artist: "Eagles", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["Am", "E7", "G", "D", "F", "C", "Dm", "E"], "Chorus": ["F", "C", "E7", "Am"] } },
-        { id: 66, title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["D", "C", "G"], "Chorus": ["D", "C", "G"] } },
-        { id: 67, title: "More Than a Feeling", artist: "Boston", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["G", "C", "Em", "D"], "Chorus": ["G", "C", "Em", "D"] } },
-        
-        // GRUNGE (Existing examples)
-        { id: 6, title: "Smells Like Teen Spirit", artist: "Nirvana", genre: "Grunge", difficulty: "Intermediate", chords: { "Verse": ["Fm", "Bb", "G#", "C#"] } },
-        { id: 8, title: "Black Hole Sun", artist: "Soundgarden", genre: "Grunge", chords: { "Verse": ["A", "G", "D", "A"] } },
-        { id: 11, title: "Plush", artist: "Stone Temple Pilots", genre: "Grunge", chords: { "Verse": ["G", "D/F#", "Em", "C"] } },
-        { id: 12, title: "Alive", artist: "Pearl Jam", genre: "Grunge", chords: { "Verse": ["A", "G", "D"] } },
-        { id: 71, title: "Lithium", artist: "Nirvana", genre: "Grunge", chords: { "Verse": ["E", "G#", "C#m", "A"] } },
-
-        // ALTERNATIVE & INDIE (Existing examples)
-        { id: 17, title: "Everlong", artist: "Foo Fighters", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Verse": ["Dmaj7", "Bm7", "G"] } },
-        { id: 27, title: "Clocks", artist: "Coldplay", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Verse": ["Eb", "Bbm", "Fm"] } },
-        { id: 38, title: "Mr. Brightside", artist: "The Killers", genre: "Alternative & Indie", chords: { "Chorus": ["Db", "Ab", "Eb", "Bbm"] } },
-        { id: 39, title: "Wonderwall", artist: "Oasis", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["F#m", "A", "E", "B"] } },
-        { id: 85, title: "Creep (Radiohead)", artist: "Radiohead", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["G", "B", "C", "Cm"] } }, // Corrected artist for clarity in UI if needed
-        { id: 88, title: "Yellow", artist: "Coldplay", genre: "Alternative & Indie", chords: { "Verse": ["G", "D", "C", "G"] } },
-        { id: 93, title: "Zombie", artist: "The Cranberries", genre: "Alternative & Indie", chords: { "Verse": ["Em", "C", "G", "D"] } },
-        { id: 96, title: "Riptide", artist: "Vance Joy", genre: "Alternative & Indie", chords: { "Verse": ["Am", "G", "C"] } },
-
-        // R&B / SOUL (Existing examples)
-        { id: 19, title: "Stand by Me", artist: "Ben E. King", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Verse": ["G", "Em", "C", "D"] } },
-        { id: 46, title: "Ain't No Sunshine", artist: "Bill Withers", genre: "R&B / Soul", chords: { "Verse": ["Am", "Em", "G"] } },
-        { id: 47, title: "If I Ain't Got You", artist: "Alicia Keys", genre: "R&B / Soul", chords: { "Verse": ["G", "Em7", "Am7", "D7"] } },
-        { id: 100, title: "Respect", artist: "Aretha Franklin", genre: "R&B / Soul", chords: { "Verse": ["G", "F", "C"] } },
-        { id: 101, title: "Superstition", artist: "Stevie Wonder", genre: "R&B / Soul", chords: { "Verse": ["Ebm7", "Ab7"] } },
-
-        // SOUNDTRACK (Existing examples)
-        { id: 29, title: "What a Wonderful World", artist: "Louis Armstrong", genre: "Soundtrack", chords: { "Verse": ["F", "Am", "Bb", "Am"] } },
-        { id: 33, title: "Let It Go", artist: "Idina Menzel (from Frozen)", genre: "Soundtrack", chords: { "Verse": ["Em", "C", "G", "D"] } },
-        { id: 50, title: "My Heart Will Go On", artist: "Celine Dion (from Titanic)", genre: "Soundtrack", chords: { "Verse": ["E", "B", "A", "E"] } },
-        { id: 52, title: "Shallow", artist: "Lady Gaga & Bradley Cooper (A Star Is Born)", genre: "Soundtrack", chords: { "Verse": ["Em", "D", "G", "C"] } },
-        { id: 112, title: "Over the Rainbow", artist: "Judy Garland (from The Wizard of Oz)", genre: "Soundtrack", chords: { "Verse": ["C", "Em", "F", "C"] } },
-        { id: 121, title: "You've Got a Friend in Me", artist: "Randy Newman (from Toy Story)", genre: "Soundtrack", chords: { "Verse": ["C", "G7", "C", "E7", "Am"] } },
-        
-        // HINDI SONGS (Existing examples)
-        { id: 125, title: "Kal Ho Naa Ho", artist: "Sonu Nigam", genre: "Hindi Songs", chords: { "Verse": ["C", "G", "Am", "F"] } },
-        { id: 126, title: "Tujhe Dekha Toh", artist: "Lata Mangeshkar, Kumar Sanu", genre: "Hindi Songs", chords: { "Verse": ["G", "C", "D", "G"] } },
-        { id: 130, title: "Tum Hi Ho", artist: "Arijit Singh", genre: "Hindi Songs", chords: { "Verse": ["Em", "C", "G", "D"] } },
-        { id: 132, title: "Gulabi Aankhen", artist: "Mohammed Rafi", genre: "Hindi Songs", chords: { "Verse": ["Am", "G", "F", "E"] } },
-        { id: 138, title: "Pani Da Rang", artist: "Ayushmann Khurrana", genre: "Hindi Songs", chords: { "Verse": ["C", "Am", "F", "G"] } }
-    ];
-
-    // Function to augment song data
-    function augmentSongData(currentSongs) {
-        const targetGenres = ['Pop', 'Classic Rock', 'Alternative & Indie', 'Grunge', 'R&B / Soul', 'Soundtrack', 'Hindi Songs'];
-        let augmentedSongs = [...currentSongs]; 
-        
-        let maxId = currentSongs.reduce((max, song) => Math.max(max, song.id), 0);
-
-        // List of popular songs to add (ensure these have distinct titles/artists from initialSongData if they are truly new)
-        // For these songs to have "real chords", you MUST add a "chords: { ... }" object to each entry.
-        // Otherwise, they will get generic chords.
-        const popularAdditions = {
+<script>
+    // --- CONFIGURATION ---
+    const AppConfig = {
+        genres: ['All', 'My Favorites', 'Recently Viewed', 'Pop', 'Classic Rock', 'Alternative & Indie', 'Grunge', 'R&B / Soul', 'Soundtrack', 'Hindi Songs'],
+        difficulties: ["Beginner", "Intermediate", "Advanced"], // Order matters for difficulty dots
+        genericChords: [ // Used for songs in popularAdditions without specified chords
+            { "Verse": ["C", "G", "Am", "F"], "Chorus": ["F", "C", "G", "C"] },
+            { "Verse": ["G", "D", "Em", "C"], "Chorus": ["G", "D", "C", "G"] },
+            { "Verse": ["Am", "F", "C", "G"], "Chorus": ["F", "G", "C", "Am"] },
+            { "Main": ["D", "A", "Bm", "G"] }
+        ],
+        maxRecentlyViewed: 15,
+        notesSharp: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
+        notesFlat:  ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
+        chordTypes: {
+            '': [0, 4, 7],         // Major (default)
+            'm': [0, 3, 7],        // Minor
+            'maj': [0, 4, 7],      // Major (explicit, e.g. Cmaj)
+            '7': [0, 4, 7, 10],    // Dominant 7th
+            'maj7': [0, 4, 7, 11], // Major 7th
+            'm7': [0, 3, 7, 10],   // Minor 7th
+            'dim': [0, 3, 6],      // Diminished
+            'dim7': [0, 3, 6, 9],  // Diminished 7th
+            'aug': [0, 4, 8],      // Augmented
+            'sus4': [0, 5, 7],     // Suspended 4th
+            'sus2': [0, 2, 7],     // Suspended 2nd
+            '6': [0, 4, 7, 9],     // Major 6th (e.g., C6)
+            'm6': [0, 3, 7, 9],    // Minor 6th (e.g., Cm6)
+            'add9': [0, 4, 7, 14], // Added 9th (Root, 3rd, 5th, 9th) (14 semitones = octave + major 2nd)
+            'm7b5': [0, 3, 6, 10], // Minor 7th flat 5 (Half-diminished)
+            '7sus4': [0, 5, 7, 10],// 7th Suspended 4th
+        },
+        transposeLimit: 11, // NEW: Max semitones up or down
+        initialSongData: [
+            // POP SONGS
+            { id: 23, title: "Imagine", artist: "John Lennon", genre: "Pop", difficulty: "Beginner", bpm: 76, chords: { "Verse": ["C", "Cmaj7", "F"], "Chorus": ["F", "G", "C", "E7"] } },
+            { id: 25, title: "Someone Like You", artist: "Adele", genre: "Pop", difficulty: "Intermediate", bpm: 67, chords: { "Verse": ["A", "E", "F#m", "D"], "Chorus": ["A", "E", "F#m", "D"] } },
+            { id: 31, title: "Perfect", artist: "Ed Sheeran", genre: "Pop", difficulty: "Beginner", bpm: 95, chords: { "Verse": ["G", "Em", "C", "D"], "Chorus": ["G", "Em", "C", "D"] } },
+            { id: 55, title: "Shape of You", artist: "Ed Sheeran", genre: "Pop", difficulty: "Intermediate", chords: { "Verse": ["C#m", "F#m", "A", "B"], "Chorus": ["C#m", "F#m", "A", "B"] } },
+            { id: 57, title: "Blinding Lights", artist: "The Weeknd", genre: "Pop", difficulty: "Intermediate", chords: { "Verse": ["Fm", "Cm", "Eb", "Bb"], "Chorus": ["Fm", "Cm", "Eb", "Bb"] } },
+            { id: 59, title: "Watermelon Sugar", artist: "Harry Styles", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Dm", "Am", "C", "G"], "Chorus": ["Dm", "Am", "C", "G"] } },
+            { id: 60, title: "Bad Guy", artist: "Billie Eilish", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Em", "D", "G"], "Chorus": ["Em", "G", "Am"] } },
+            { id: 61, title: "Shake It Off", artist: "Taylor Swift", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Am", "C", "G"], "Chorus": ["Am", "C", "G", "F"] } },
+            { id: 62, title: "Happy", artist: "Pharrell Williams", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Fm", "Db", "Ab", "Eb"], "Chorus": ["Fm", "Db", "Ab", "Eb"] } },
+            { id: 64, title: "Royals", artist: "Lorde", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["D", "C", "G"], "Chorus": ["D", "C", "G"] } },
+            // CLASSIC ROCK SONGS
+            { id: 1, title: "Bohemian Rhapsody", artist: "Queen", genre: "Classic Rock", difficulty: "Advanced", bpm: 72, chords: { "Intro": ["Bb", "Gm", "Eb", "F", "Bb6"], "Ballad": ["Bb", "Gm", "Cm", "F", "Eb/G", "F/A"], "Opera": ["A", "D", "G", "C#dim", "F#7"] } },
+            { id: 14, title: "Stairway to Heaven", artist: "Led Zeppelin", genre: "Classic Rock", difficulty: "Advanced", chords: { "Intro": ["Am", "G#aug", "C/G", "D/F#", "Fmaj7", "G/B", "Am"], "Verse": ["Am", "G", "C", "D", "Fmaj7"] } },
+            { id: 16, title: "Sweet Child O' Mine", artist: "Guns N' Roses", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["D", "C", "G"], "Chorus": ["A", "C", "D", "G"] } },
+            { id: 18, title: "Knockin' on Heaven's Door", artist: "Bob Dylan", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["G", "D", "Am"], "Chorus": ["G", "D", "C"] } },
+            { id: 20, title: "Hey Jude", artist: "The Beatles", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["F", "C", "C7", "F", "Bb"], "Outro": ["F", "Eb", "Bb", "F"] } },
+            { id: 22, title: "Let It Be", artist: "The Beatles", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["C", "G", "Am", "F"], "Chorus": ["F", "C", "G", "C"] } },
+            { id: 43, title: "Piano Man", artist: "Billy Joel", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["C", "G/B", "Am", "Am/G", "F", "C/E", "D7", "G"], "Chorus": ["F", "C/E", "D7", "G", "C"] } },
+            { id: 44, title: "Hotel California", artist: "Eagles", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["Am", "E7", "G", "D", "F", "C", "Dm", "E"], "Chorus": ["F", "C", "E7", "Am"] } },
+            { id: 66, title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["D", "C", "G"], "Chorus": ["D", "C", "G"] } },
+            { id: 67, title: "More Than a Feeling", artist: "Boston", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["G", "Cadd9", "Em7", "D"], "Chorus": ["G", "Cadd9", "Em7", "D"] } },
+            // GRUNGE
+            { id: 6, title: "Smells Like Teen Spirit", artist: "Nirvana", genre: "Grunge", difficulty: "Intermediate", chords: { "Verse": ["Fm", "Bb", "G#", "C#"] } },
+            { id: 8, title: "Black Hole Sun", artist: "Soundgarden", genre: "Grunge", difficulty: "Advanced", chords: { "Verse": ["A", "G", "D", "E", "Cmaj7/G"], "Chorus": ["E", "A", "D", "G", "C"] } },
+            { id: 11, title: "Plush", artist: "Stone Temple Pilots", genre: "Grunge", difficulty: "Intermediate", chords: { "Verse": ["G", "D/F#", "Em", "Cadd9"] } },
+            { id: 12, title: "Alive", artist: "Pearl Jam", genre: "Grunge", difficulty: "Intermediate", chords: { "Verse": ["A", "G", "D", "E"] } },
+            { id: 71, title: "Lithium", artist: "Nirvana", genre: "Grunge", difficulty: "Beginner", chords: { "Verse": ["E", "G#", "C#m", "A", "C", "D"] } },
+            // ALTERNATIVE & INDIE
+            { id: 17, title: "Everlong", artist: "Foo Fighters", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Verse": ["Dmaj7", "Bm7", "G", "Asus4"] } },
+            { id: 27, title: "Clocks", artist: "Coldplay", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Verse": ["Eb", "Bbm7", "Fm7"] } },
+            { id: 38, title: "Mr. Brightside", artist: "The Killers", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Chorus": ["Db", "Ab", "Bbm", "Gb"] } },
+            { id: 39, title: "Wonderwall", artist: "Oasis", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["F#m", "A", "E", "B", "D", "C#m"] } },
+            { id: 85, title: "Creep", artist: "Radiohead", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["G", "B", "C", "Cm"] } },
+            { id: 88, title: "Yellow", artist: "Coldplay", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["G", "D", "Cadd9", "Em7"] } },
+            { id: 93, title: "Zombie", artist: "The Cranberries", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["Em", "C", "G", "D"] } },
+            { id: 96, title: "Riptide", artist: "Vance Joy", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["Am", "G", "C", "F"] } },
+            // R&B / SOUL
+            { id: 19, title: "Stand by Me", artist: "Ben E. King", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Verse": ["G", "Em", "C", "D"] } },
+            { id: 46, title: "Ain't No Sunshine", artist: "Bill Withers", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Verse": ["Am7", "Em", "G", "Dm7"] } },
+            { id: 47, title: "If I Ain't Got You", artist: "Alicia Keys", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Verse": ["Gmaj7", "Em7", "Am7", "D7", "Bm7"] } },
+            { id: 100, title: "Respect", artist: "Aretha Franklin", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Verse": ["G", "F", "C", "Bb"] } },
+            { id: 101, title: "Superstition", artist: "Stevie Wonder", genre: "R&B / Soul", difficulty: "Advanced", chords: { "Verse": ["Ebm7", "Ab7", "Dbmaj7", "Gbmaj7"] } },
+            // SOUNDTRACK
+            { id: 29, title: "What a Wonderful World", artist: "Louis Armstrong", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["F", "Am", "Bb", "C7", "Gm7"] } },
+            { id: 33, title: "Let It Go", artist: "Idina Menzel (from Frozen)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["Em", "C", "G", "D", "Am"] } },
+            { id: 50, title: "My Heart Will Go On", artist: "Celine Dion (from Titanic)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Verse": ["E", "B", "A", "C#m", "F#m"] } },
+            { id: 52, title: "Shallow", artist: "Lady Gaga & Bradley Cooper (A Star Is Born)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Verse": ["Em", "D/F#", "G", "C", "Am7"] } },
+            { id: 112, title: "Over the Rainbow", artist: "Judy Garland (from The Wizard of Oz)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["C", "Em", "F", "G7", "Am"] } },
+            { id: 121, title: "You've Got a Friend in Me", artist: "Randy Newman (from Toy Story)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["C", "G7", "E7", "Am", "D7", "F"] } },
+            // HINDI SONGS
+            { id: 125, title: "Kal Ho Naa Ho", artist: "Sonu Nigam", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Verse": ["C", "G", "Am", "F", "Dm"] } },
+            { id: 126, title: "Tujhe Dekha Toh", artist: "Lata Mangeshkar, Kumar Sanu", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Verse": ["G", "C", "D", "Em"] } },
+            { id: 130, title: "Tum Hi Ho", artist: "Arijit Singh", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Verse": ["Em", "C", "G", "D", "Am"] } },
+            { id: 132, title: "Gulabi Aankhen", artist: "Mohammed Rafi", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Verse": ["Am", "G", "F", "E7"] } },
+            { id: 138, title: "Pani Da Rang", artist: "Ayushmann Khurrana", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Verse": ["C", "Am", "F", "G", "Em"] } }
+        ],
+        popularAdditions: {
             "Pop": [
                 { title: "As It Was", artist: "Harry Styles" }, { title: "Levitating", artist: "Dua Lipa" },
                 { title: "Stay", artist: "The Kid LAROI, Justin Bieber" }, { title: "good 4 u", artist: "Olivia Rodrigo" },
@@ -232,7 +312,7 @@
                 { title: "Dance The Night", artist: "Dua Lipa"}, { title: "greedy", artist: "Tate McRae"},
                 { title: "Paint The Town Red", artist: "Doja Cat"}, { title: "Get Lucky", artist: "Daft Punk ft. Pharrell Williams"},
                 { title: "Uptown Funk", artist: "Mark Ronson ft. Bruno Mars"},
-                { title: "Sorry", artist: "Justin Bieber"}, { title: "Thinking Out Loud", artist: "Ed Sheeran"}, // Also in R&B list
+                { title: "Sorry", artist: "Justin Bieber"}, { title: "Thinking Out Loud", artist: "Ed Sheeran"},
                 { title: "Hello", artist: "Adele"}, { title: "Sugar", artist: "Maroon 5"},
                 { title: "Can't Stop the Feeling!", artist: "Justin Timberlake"}, { title: "Closer", artist: "The Chainsmokers ft. Halsey"}
             ],
@@ -248,33 +328,31 @@
                 { title: "Born to Be Wild", artist: "Steppenwolf"}, { title: "Light My Fire", artist: "The Doors"},
                 { title: "Gimme Shelter", artist: "The Rolling Stones"}, { title: "Baba O'Riley", artist: "The Who"},
                 { title: "Iron Man", artist: "Black Sabbath"}, { title: "Carry On Wayward Son", artist: "Kansas"}
-                // { title: "More Than A Feeling", artist: "Boston"} // Already in initialSongData
             ],
-            "Alternative & Indie": [ 
+            "Alternative & Indie": [
                 { title: "Take Me to Church", artist: "Hozier" }, { title: "Do I Wanna Know?", artist: "Arctic Monkeys" },
                 { title: "Little Talks", artist: "Of Monsters and Men" }, { title: "Somebody That I Used to Know", artist: "Gotye ft. Kimbra" },
-                { title: "Sweater Weather", artist: "The Neighbourhood" }, 
+                { title: "Sweater Weather", artist: "The Neighbourhood" },
                 { title: "Skinny Love", artist: "Bon Iver"}, { title: "The Suburbs", artist: "Arcade Fire"},
                 { title: "Lisztomania", artist: "Phoenix"}, { title: "Kids", artist: "MGMT"},
                 { title: "Losing My Religion", artist: "R.E.M."}, { title: "The Less I Know The Better", artist: "Tame Impala"},
                 { title: "Float On", artist: "Modest Mouse"}, { title: "Seven Nation Army", artist: "The White Stripes"},
-                { title: "Pumped Up Kicks", artist: "Foster The People"}, 
-                { title: "Ho Hey", artist: "The Lumineers"}, 
+                { title: "Pumped Up Kicks", artist: "Foster The People"},
+                { title: "Ho Hey", artist: "The Lumineers"},
                 { title: "Feel Good Inc.", artist: "Gorillaz"}, { title: "Island in the Sun", artist: "Weezer"},
-                { title: "Last Nite", artist: "The Strokes"}, { title: "Stubborn Love", artist: "The Lumineers"} // Changed from "Hey Ho" for variety
+                { title: "Last Nite", artist: "The Strokes"}, { title: "Stubborn Love", artist: "The Lumineers"}
             ],
-            "Grunge": [ 
+            "Grunge": [
                 { title: "Heart-Shaped Box", artist: "Nirvana" }, { title: "Glycerine", artist: "Bush" },
                 { title: "Black", artist: "Pearl Jam" }, { title: "Outshined", artist: "Soundgarden" },
                 { title: "Them Bones", artist: "Alice in Chains" }, {title: "Vasoline", artist: "Stone Temple Pilots"},
                 {title: "Polly", artist: "Nirvana"}, {title: "Rusty Cage", artist: "Soundgarden"},
                 {title: "No Excuses", artist: "Alice in Chains"}, {title: "Far Behind", artist: "Candlebox"},
                 {title: "Jeremy", artist: "Pearl Jam"}, {title: "Would?", artist: "Alice in Chains"},
-                {title: "Hunger Strike", artist: "Temple of the Dog"}, {title: "Man in the Box", artist: "Alice in Chains"}, 
+                {title: "Hunger Strike", artist: "Temple of the Dog"}, {title: "Man in the Box", artist: "Alice in Chains"},
                 {title: "Even Flow", artist: "Pearl Jam"}, {title: "Come As You Are", artist: "Nirvana"}
             ],
             "R&B / Soul": [
-                // { title: "Thinking Out Loud", artist: "Ed Sheeran" }, // Already in Pop, can be here too if desired with R&B specific chords
                 { title: "Sexual Healing", artist: "Marvin Gaye" },
                 { title: "If You Don't Know Me by Now", artist: "Harold Melvin & The Blue Notes" },
                 { title: "Crazy in Love", artist: "Beyoncé ft. Jay-Z" }, { title: "Signed, Sealed, Delivered I'm Yours", artist: "Stevie Wonder"},
@@ -283,7 +361,7 @@
                 { title: "No Scrubs", artist: "TLC"}, { title: "Doo Wop (That Thing)", artist: "Lauryn Hill"},
                 { title: "Leave The Door Open", artist: "Silk Sonic"}, { title: "Waterfalls", artist: "TLC"},
                 { title: "My Girl", artist: "The Temptations"}, { title: "Let's Get It On", artist: "Marvin Gaye"},
-                { title: "Sittin' On The Dock of the Bay", artist: "Otis Redding"}, 
+                { title: "Sittin' On The Dock of the Bay", artist: "Otis Redding"},
                 { title: "I Heard It Through the Grapevine", artist: "Marvin Gaye"}
             ],
             "Soundtrack": [
@@ -295,418 +373,759 @@
                 { title: "Part of Your World", artist: "Jodi Benson (The Little Mermaid)"}, { title: "Circle of Life", artist: "Elton John (The Lion King)"},
                 { title: "Theme from Jurassic Park", artist: "John Williams"}, { title: "Star Wars Main Theme", artist: "John Williams"},
                 { title: "Defying Gravity", artist: "Idina Menzel, Kristin Chenoweth (Wicked)"}
-                // { title: "Bohemian Rhapsody (Film Version)", artist: "Rami Malek (Bohemian Rhapsody)"} // Covered by Queen original
             ],
-            "Hindi Songs": [ 
+            "Hindi Songs": [
                 { title: "Kesariya", artist: "Arijit Singh (Brahmastra)" }, { title: "Channa Mereya", artist: "Arijit Singh (Ae Dil Hai Mushkil)" },
                 { title: "Tum Sath Ho", artist: "Arijit Singh, Alka Yagnik (Tamasha)" }, { title: "Lag Jaa Gale", artist: "Lata Mangeshkar (Woh Kaun Thi?)" },
-                { title: "Chura Liya Hai Tumne Jo Dil Ko", artist: "Asha Bhosle, Mohammed Rafi (Yaadon Ki Baaraat)" }, 
+                { title: "Chura Liya Hai Tumne Jo Dil Ko", artist: "Asha Bhosle, Mohammed Rafi (Yaadon Ki Baaraat)" },
                 { title: "Tere Bina Zindagi Se", artist: "Lata Mangeshkar, Kishore Kumar (Aandhi)"},
-                { title: "Yeh Dosti Hum Nahin Todenge", artist: "Kishore Kumar, Manna Dey (Sholay)"}, 
+                { title: "Yeh Dosti Hum Nahin Todenge", artist: "Kishore Kumar, Manna Dey (Sholay)"},
                 { title: "Papa Kehte Hain", artist: "Udit Narayan (Qayamat Se Qayamat Tak)"},
-                { title: "Tujh Mein Rab Dikhta Hai", artist: "Roop Kumar Rathod (Rab Ne Bana Di Jodi)"}, 
+                { title: "Tujh Mein Rab Dikhta Hai", artist: "Roop Kumar Rathod (Rab Ne Bana Di Jodi)"},
                 { title: "Dil Chahta Hai", artist: "Shankar Mahadevan (Dil Chahta Hai)"},
                 { title: "Maa Tujhe Salaam", artist: "A.R. Rahman"}, { title: "Jai Ho", artist: "A.R. Rahman, Sukhwinder Singh (Slumdog Millionaire)"},
                 { title: "Tera Zikr", artist: "Darshan Raval"}, { title: "Ghungroo", artist: "Arijit Singh, Shilpa Rao (War)"},
                 { title: "Apna Time Aayega", artist: "Ranveer Singh (Gully Boy)"}, { title: "Bekhayali", artist: "Sachet Tandon (Kabir Singh)"}
             ]
-        };
-        
-        const genericChords = [
-            { "Verse": ["C", "G", "Am", "F"], "Chorus": ["F", "C", "G", "C"] },
-            { "Verse": ["G", "D", "Em", "C"], "Chorus": ["G", "D", "C", "G"] },
-            { "Verse": ["Am", "F", "C", "G"], "Chorus": ["F", "G", "C", "Am"] },
-            { "Main": ["D", "A", "Bm", "G"] } // Can be used if only one section is needed
-        ];
-        const difficulties = ["Beginner", "Intermediate", "Advanced"]; // For assigning random difficulties
+        }
+    };
 
-        targetGenres.forEach(genreName => {
-            if (popularAdditions[genreName]) {
-                for (const popularSong of popularAdditions[genreName]) {
-                    // Check if this popular song (by title and artist, and genre) already exists in augmentedSongs
-                    const songExists = augmentedSongs.some(s => 
-                        s.title.toLowerCase() === popularSong.title.toLowerCase() && 
-                        s.artist.toLowerCase() === popularSong.artist.toLowerCase() &&
-                        s.genre === genreName // Ensure genre matches as well
-                    );
+    // --- DOM ELEMENTS ---
+    const DOM = {
+        songGrid: document.getElementById('song-grid'),
+        modal: document.getElementById('song-modal'),
+        closeModalBtn: document.getElementById('close-modal'),
+        modalTitle: document.getElementById('modal-song-title'),
+        modalArtist: document.getElementById('modal-song-artist'),
+        modalBpm: document.getElementById('modal-song-bpm'),
+        modalChords: document.getElementById('modal-song-chords'),
+        modalFavoriteBtn: document.getElementById('modal-favorite-btn'),
+        toggleDarkBtn: document.getElementById('toggle-dark'),
+        searchBar: document.getElementById('search-bar'),
+        clearSearchBtn: document.getElementById('clear-search-btn'),
+        filterContainer: document.getElementById('filter-container'),
+        difficultyFilterContainer: document.getElementById('difficulty-filter-container'),
+        noResultsDiv: document.getElementById('no-results'),
+        shareTwitterBtn: document.getElementById('share-twitter'),
+        shareFacebookBtn: document.getElementById('share-facebook'),
+        shareEmailBtn: document.getElementById('share-email'),
+        transposeAnnouncer: document.getElementById('transpose-announcer'),
+        transposeIndicator: document.getElementById('transpose-indicator'),
+        transposeDownBtn: document.getElementById('transpose-down-btn'),
+        transposeResetBtn: document.getElementById('transpose-reset-btn'),
+        transposeUpBtn: document.getElementById('transpose-up-btn')
+    };
 
-                    if (!songExists) {
-                        maxId++;
-                        augmentedSongs.push({
-                            id: maxId,
-                            title: popularSong.title,
-                            artist: popularSong.artist,
-                            genre: genreName, 
-                            // Use provided chords/difficulty if available in popularSong, else assign generic/random
-                            chords: popularSong.chords || genericChords[maxId % genericChords.length], 
-                            difficulty: popularSong.difficulty || difficulties[maxId % difficulties.length],
-                            bpm: popularSong.bpm // Will be undefined if not in popularSong object
-                        });
-                    }
+    // --- APPLICATION STATE ---
+    let AppState = {
+        currentGenreFilter: 'All',
+        currentDifficultyFilter: 'All',
+        favorites: [],
+        recentlyViewed: [],
+        currentModalSongId: null,
+        currentTransposeOffset: 0,
+        songData: [],
+        activeElementBeforeModal: null,
+        focusedCardIndex: -1
+    };
+
+    // --- MUSIC THEORY HELPERS ---
+    const MusicTheory = {
+        getNoteIndex: function(noteName) {
+            let i = AppConfig.notesSharp.indexOf(noteName);
+            if (i !== -1) return i;
+            i = AppConfig.notesFlat.indexOf(noteName);
+            if (i !== -1) return AppConfig.notesFlat.indexOf(noteName);
+            return -1;
+        },
+        getNoteFromIndex: function(index, preferFlat = false) {
+            const normalizedIndex = ((index % 12) + 12) % 12;
+            const sharpNote = AppConfig.notesSharp[normalizedIndex];
+            if (preferFlat) {
+                const flatEquivalent = AppConfig.notesFlat[normalizedIndex];
+                if (flatEquivalent && flatEquivalent.includes('b')) {
+                    return flatEquivalent;
                 }
             }
-            // The loop that generated "Classic [Genre] Tune X" has been removed.
-        });
-        return augmentedSongs;
-    }
-
-    // Augment the initial data
-    const songData = augmentSongData(initialSongData);
-
-    // DOM Elements
-    const songGrid = document.getElementById('song-grid');
-    const modal = document.getElementById('song-modal');
-    // const modalContent = modal.querySelector('div > div'); // Not used directly, but good to know
-    const closeModalBtn = document.getElementById('close-modal');
-    const modalTitle = document.getElementById('modal-song-title');
-    const modalArtist = document.getElementById('modal-song-artist');
-    const modalBpm = document.getElementById('modal-song-bpm');
-    const modalChords = document.getElementById('modal-song-chords');
-    const modalFavoriteBtn = document.getElementById('modal-favorite-btn');
-    const toggleDark = document.getElementById('toggle-dark');
-    const searchBar = document.getElementById('search-bar');
-    const clearSearchBtn = document.getElementById('clear-search-btn');
-    const filterContainer = document.getElementById('filter-container');
-    const difficultyFilterContainer = document.getElementById('difficulty-filter-container');
-    const noResultsDiv = document.getElementById('no-results');
-
-    // Share buttons
-    const shareTwitterBtn = document.getElementById('share-twitter');
-    const shareFacebookBtn = document.getElementById('share-facebook');
-    const shareEmailBtn = document.getElementById('share-email');
-
-
-    let currentGenreFilter = 'All';
-    let currentDifficultyFilter = 'All';
-    let favorites = [];
-    let currentModalSongId = null;
-
-
-    // --- Favorite Logic ---
-    function loadFavorites() {
-        const storedFavorites = localStorage.getItem('pianoChordFavorites');
-        if (storedFavorites) {
-            favorites = JSON.parse(storedFavorites);
-        }
-    }
-
-    function saveFavorites() {
-        localStorage.setItem('pianoChordFavorites', JSON.stringify(favorites));
-    }
-
-    function isFavorite(songId) {
-        return favorites.includes(songId);
-    }
-
-    function toggleFavorite(songId, buttonElement) {
-        const songIndex = favorites.indexOf(songId);
-        if (songIndex > -1) {
-            favorites.splice(songIndex, 1); 
-        } else {
-            favorites.push(songId); 
-        }
-        saveFavorites();
-        updateFavoriteButtonState(buttonElement, songId); // Update button that was clicked
-        // If the modal's favorite button is for the same song, update it too
-        if (modalFavoriteBtn.dataset.songId == songId) { 
-             updateFavoriteButtonState(modalFavoriteBtn, songId);
-        }
-        // If viewing favorites, refresh the list. Otherwise, update the card in the grid.
-        if (currentGenreFilter === 'My Favorites') {
-            populateSongs();
-        } else {
-            const cardFavoriteButton = songGrid.querySelector(`.favorite-btn-card[data-song-id="${songId}"]`);
-            if (cardFavoriteButton && cardFavoriteButton !== buttonElement) { // Ensure not re-updating the same button if it's a card button
-                 updateFavoriteButtonState(cardFavoriteButton, songId);
+            return sharpNote;
+        },
+        parseChordName: function(chordName) {
+            const pattern = /^([A-Ga-g][#b]?)((?:maj7|m7b5|7sus4|add9|sus4|sus2|m7|m6|dim7|dim|aug|maj|m|6|7)?)(\/(?:[A-Ga-g][#b]?))?(.*)$/;
+            const match = chordName.match(pattern);
+            if (!match) {
+                console.warn("Could not parse chord:", chordName);
+                return { root: chordName, type: '', bass: null, rest: '' };
             }
-        }
-    }
-    
-    function updateFavoriteButtonState(buttonElement, songId) {
-        if (!buttonElement) return;
-        const heartIcon = buttonElement.querySelector('svg'); // Get the SVG icon
-        if (isFavorite(songId)) {
-            buttonElement.classList.add('favorited');
-            buttonElement.title = "Remove from Favorites";
-            if (heartIcon) heartIcon.setAttribute('fill', '#ef4444'); // Tailwind red-500
-        } else {
-            buttonElement.classList.remove('favorited');
-            buttonElement.title = "Add to Favorites";
-            if (heartIcon) heartIcon.setAttribute('fill', 'none');
-        }
-    }
-
-
-    // --- Song and Filter Logic ---
-
-    function createGenreFilterButtons() {
-      const genres = ['All', 'My Favorites', 'Pop', 'Classic Rock', 'Alternative & Indie', 'Grunge', 'R&B / Soul', 'Soundtrack', 'Hindi Songs'];
-      filterContainer.innerHTML = ''; 
-      genres.forEach(genre => {
-        const btn = document.createElement('button');
-        btn.textContent = genre;
-        btn.className = `filter-btn px-3 py-2 sm:px-4 rounded-md border text-xs sm:text-sm font-semibold transition-colors duration-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700`;
-        if (genre === currentGenreFilter) {
-          btn.classList.add('filter-btn-active');
-        }
-        btn.addEventListener('click', () => {
-          currentGenreFilter = genre;
-          document.querySelectorAll('#filter-container .filter-btn').forEach(b => b.classList.remove('filter-btn-active'));
-          btn.classList.add('filter-btn-active');
-          populateSongs();
-        });
-        filterContainer.appendChild(btn);
-      });
-    }
-
-    function createDifficultyFilterButtons() {
-        const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced']; 
-        difficultyFilterContainer.innerHTML = '';
-        difficulties.forEach(difficulty => {
-            const btn = document.createElement('button');
-            btn.textContent = difficulty;
-            btn.className = `filter-btn px-3 py-2 sm:px-4 rounded-md border text-xs sm:text-sm font-semibold transition-colors duration-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700`;
-            if (difficulty === currentDifficultyFilter) {
-               btn.classList.add('filter-btn-active');
+            let root = match[1];
+            let type = match[2] || '';
+            let bass = match[3] ? match[3].substring(1) : null;
+            let rest = match[4] || '';
+            if (type === 'maj' && !chordName.toLowerCase().includes('maj7')) type = '';
+            return { root, type, bass, rest };
+        },
+        getNotesForChord: function(chordName) {
+            const parsed = this.parseChordName(chordName);
+            if (!parsed || parsed.root === chordName && parsed.type === '' && parsed.bass === null) {
+                 console.warn(`Cannot get notes for unparsed or basic root-only string: ${chordName}`);
+                 if (AppConfig.notesSharp.includes(parsed.root) || AppConfig.notesFlat.includes(parsed.root)) {
+                    const rootIdx = this.getNoteIndex(parsed.root);
+                    if (rootIdx !== -1) {
+                        return AppConfig.chordTypes[''].map(interval => this.getNoteFromIndex((rootIdx + interval)));
+                    }
+                 }
+                 return [];
             }
-            btn.addEventListener('click', () => {
-                currentDifficultyFilter = difficulty;
-                document.querySelectorAll('#difficulty-filter-container .filter-btn').forEach(b => b.classList.remove('filter-btn-active'));
-                btn.classList.add('filter-btn-active');
-                populateSongs();
+            const rootIndex = this.getNoteIndex(parsed.root);
+            if (rootIndex === -1) {
+                console.warn(`Root note '${parsed.root}' not found for chord: ${chordName}`);
+                return [];
+            }
+            const intervals = AppConfig.chordTypes[parsed.type];
+            if (!intervals) {
+                console.warn(`Unknown chord type '${parsed.type}' for chord: ${chordName}. Cannot determine notes.`);
+                return [parsed.root];
+            }
+            let notesInChord = intervals.map(interval => this.getNoteFromIndex((rootIndex + interval)));
+            if (parsed.bass) {
+                const bassNoteName = parsed.bass;
+                const bassNoteIndex = this.getNoteIndex(bassNoteName);
+                if (bassNoteIndex !== -1) {
+                    const isBassNoteInChordVoicing = notesInChord.some(note => this.getNoteIndex(note) === bassNoteIndex);
+                    if (!isBassNoteInChordVoicing) {
+                         notesInChord.push(bassNoteName);
+                    }
+                } else {
+                    console.warn(`Bass note '${parsed.bass}' not found for slash chord: ${chordName}`);
+                }
+            }
+            return [...new Set(notesInChord)];
+        }
+    };
+
+    // --- CHORD TRANSPOSITION ---
+    const ChordTransposer = {
+        transposeNote: function(note, semitones) {
+            const noteIndex = MusicTheory.getNoteIndex(note);
+            if (noteIndex === -1) return note;
+            let transposedIndex = (noteIndex + semitones);
+            transposedIndex = ((transposedIndex % 12) + 12) % 12;
+            const originalIsFlat = AppConfig.notesFlat.includes(note) && note.includes('b');
+            return MusicTheory.getNoteFromIndex(transposedIndex, originalIsFlat);
+        },
+        transposeFullChord: function(fullChord, semitones) {
+            if (semitones === 0) return fullChord;
+            const parsed = MusicTheory.parseChordName(fullChord);
+            if (!parsed || (parsed.root === fullChord && parsed.type === '' && parsed.bass === null)) {
+                if (MusicTheory.getNoteIndex(fullChord) !== -1) {
+                    return this.transposeNote(fullChord, semitones);
+                }
+                return fullChord;
+            }
+            let transposedRoot = this.transposeNote(parsed.root, semitones);
+            let transposedBass = parsed.bass ? "/" + this.transposeNote(parsed.bass, semitones) : "";
+            return transposedRoot + parsed.type + transposedBass + parsed.rest;
+        }
+    };
+
+    // --- PIANO KEY SVG DISPLAY ---
+    const PianoKeyDisplay = {
+        createSVG: function(notesToHighlight, isDarkMode) {
+            const svgNS = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(svgNS, "svg");
+            const keyWidth = 10;
+            const keyHeight = 45;
+            const blackKeyWidth = keyWidth * 0.65;
+            const blackKeyHeight = keyHeight * 0.6;
+            const displayOctaveNotes = AppConfig.notesSharp;
+            const whiteKeyPositionsInOctave = [0, 2, 4, 5, 7, 9, 11];
+            const blackKeyPositionsInOctave = [1, 3, 6, 8, 10];
+            const highlightColor = isDarkMode ? tailwind.config.theme.extend.colors['piano-highlight-dark'] : tailwind.config.theme.extend.colors['piano-highlight'];
+            const whiteKeyFill = isDarkMode ? tailwind.config.theme.extend.colors['piano-white-dark'] : tailwind.config.theme.extend.colors['piano-white'];
+            const blackKeyFill = isDarkMode ? tailwind.config.theme.extend.colors['piano-black-dark'] : tailwind.config.theme.extend.colors['piano-black'];
+            const keyStrokeColor = isDarkMode ? "#4b5563" : "#d1d5db";
+            svg.setAttribute("width", keyWidth * 7);
+            svg.setAttribute("height", keyHeight);
+            svg.setAttribute("viewBox", `0 0 ${keyWidth * 7} ${keyHeight}`);
+            svg.classList.add("piano-key-display");
+            for (let i = 0; i < 7; i++) {
+                const rect = document.createElementNS(svgNS, "rect");
+                rect.setAttribute("x", i * keyWidth);
+                rect.setAttribute("y", 0);
+                rect.setAttribute("width", keyWidth);
+                rect.setAttribute("height", keyHeight);
+                rect.setAttribute("stroke", keyStrokeColor);
+                rect.setAttribute("stroke-width", "1");
+                const whiteNoteName = displayOctaveNotes[whiteKeyPositionsInOctave[i]];
+                rect.setAttribute("fill", notesToHighlight.includes(whiteNoteName) ? highlightColor : whiteKeyFill);
+                svg.appendChild(rect);
+            }
+            const blackKeyXOffsetsFactors = [0.65, 1.70, 3.65, 4.70, 5.70];
+            for (let i = 0; i < 5; i++) {
+                const rect = document.createElementNS(svgNS, "rect");
+                rect.setAttribute("x", blackKeyXOffsetsFactors[i] * keyWidth);
+                rect.setAttribute("y", 0);
+                rect.setAttribute("width", blackKeyWidth);
+                rect.setAttribute("height", blackKeyHeight);
+                rect.setAttribute("stroke", blackKeyFill);
+                rect.setAttribute("stroke-width", "1");
+                const blackNoteName = displayOctaveNotes[blackKeyPositionsInOctave[i]];
+                rect.setAttribute("fill", notesToHighlight.includes(blackNoteName) ? highlightColor : blackKeyFill);
+                svg.appendChild(rect);
+            }
+            return svg;
+        }
+    };
+
+    // --- DATA MANAGEMENT ---
+    const DataManager = {
+        augmentSongData: function(initialSongs, popularAdditionsByGenre, genericChordsList, difficultyLevels) {
+            const augmentedSongs = [...initialSongs];
+            let maxId = initialSongs.reduce((max, song) => Math.max(max, song.id || 0), 0);
+            for (const genreName in popularAdditionsByGenre) {
+                if (popularAdditionsByGenre.hasOwnProperty(genreName)) {
+                    const popularSongsInGenre = popularAdditionsByGenre[genreName];
+                    popularSongsInGenre.forEach(popularSong => {
+                        const songExists = augmentedSongs.some(s =>
+                            s.title.toLowerCase() === popularSong.title.toLowerCase() &&
+                            s.artist.toLowerCase() === popularSong.artist.toLowerCase() &&
+                            s.genre === genreName
+                        );
+                        if (!songExists) {
+                            maxId++;
+                            augmentedSongs.push({
+                                id: maxId,
+                                title: popularSong.title,
+                                artist: popularSong.artist,
+                                genre: genreName,
+                                chords: popularSong.chords || genericChordsList[maxId % genericChordsList.length],
+                                difficulty: popularSong.difficulty || difficultyLevels[maxId % difficultyLevels.length],
+                                bpm: popularSong.bpm
+                            });
+                        }
+                    });
+                }
+            }
+            return augmentedSongs;
+        },
+        initializeSongData: function() {
+            AppState.songData = this.augmentSongData(
+                AppConfig.initialSongData,
+                AppConfig.popularAdditions,
+                AppConfig.genericChords,
+                AppConfig.difficulties
+            );
+        },
+        getSongById: function(songId) {
+            return AppState.songData.find(s => s.id === songId);
+        }
+    };
+
+    // --- LOCAL STORAGE MANAGERS ---
+    const FavoritesManager = {
+        load: function() {
+            const storedFavorites = localStorage.getItem('pianoChordFavorites_v2');
+            if (storedFavorites) {
+                try { AppState.favorites = JSON.parse(storedFavorites); }
+                catch (e) { console.error("Error parsing favorites: ", e); AppState.favorites = []; }
+            }
+        },
+        save: function() { localStorage.setItem('pianoChordFavorites_v2', JSON.stringify(AppState.favorites)); },
+        isFavorite: function(songId) { return AppState.favorites.includes(songId); },
+        toggle: function(songId, buttonElement) {
+            const songIndex = AppState.favorites.indexOf(songId);
+            if (songIndex > -1) AppState.favorites.splice(songIndex, 1);
+            else AppState.favorites.push(songId);
+            this.save();
+            if (buttonElement) this.updateButtonState(buttonElement, songId);
+            if (AppState.currentModalSongId === songId) {
+                const otherButton = (buttonElement === DOM.modalFavoriteBtn)
+                    ? DOM.songGrid.querySelector(`.favorite-btn-card[data-song-id="${songId}"]`)
+                    : DOM.modalFavoriteBtn;
+                if (otherButton) this.updateButtonState(otherButton, songId);
+            }
+            if (AppState.currentGenreFilter === 'My Favorites') SongRenderer.populate();
+        },
+        updateButtonState: function(buttonElement, songId) {
+            if (!buttonElement) return;
+            const heartIcon = buttonElement.querySelector('svg');
+            const isFav = this.isFavorite(songId);
+            buttonElement.classList.toggle('favorited', isFav);
+            buttonElement.setAttribute('aria-label', isFav ? 'Remove from Favorites' : 'Add to Favorites');
+            buttonElement.title = isFav ? 'Remove from Favorites' : 'Add to Favorites';
+            if (heartIcon) heartIcon.setAttribute('fill', isFav ? '#ef4444' : 'none');
+        }
+    };
+
+    const RecentlyViewedManager = {
+        load: function() {
+            const stored = localStorage.getItem('pianoChordRecentlyViewed_v2');
+            if (stored) {
+                try { AppState.recentlyViewed = JSON.parse(stored); }
+                catch (e) { console.error("Error parsing recently viewed: ", e); AppState.recentlyViewed = []; }
+            }
+        },
+        save: function() { localStorage.setItem('pianoChordRecentlyViewed_v2', JSON.stringify(AppState.recentlyViewed)); },
+        add: function(songId) {
+            AppState.recentlyViewed = AppState.recentlyViewed.filter(id => id !== songId);
+            AppState.recentlyViewed.unshift(songId);
+            if (AppState.recentlyViewed.length > AppConfig.maxRecentlyViewed) {
+                AppState.recentlyViewed = AppState.recentlyViewed.slice(0, AppConfig.maxRecentlyViewed);
+            }
+            this.save();
+        }
+    };
+
+    // --- FILTERING LOGIC ---
+    const FilterManager = {
+        createButtons: function(container, items, currentFilterStateProperty) {
+            container.innerHTML = '';
+            items.forEach(item => {
+                const btn = document.createElement('button');
+                btn.textContent = item;
+                btn.className = `filter-btn px-3 py-2 sm:px-4 rounded-md border text-xs sm:text-sm font-semibold transition-colors duration-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 text-light-text dark:text-dark-text`;
+                if (item === AppState[currentFilterStateProperty]) {
+                    btn.classList.add('filter-btn-active');
+                    btn.setAttribute('aria-pressed', 'true');
+                } else {
+                    btn.setAttribute('aria-pressed', 'false');
+                }
+                btn.setAttribute('role', 'button');
+                btn.addEventListener('click', () => {
+                    AppState[currentFilterStateProperty] = item;
+                    container.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('filter-btn-active');
+                        b.setAttribute('aria-pressed', 'false');
+                    });
+                    btn.classList.add('filter-btn-active');
+                    btn.setAttribute('aria-pressed', 'true');
+                    SongRenderer.populate();
+                });
+                container.appendChild(btn);
             });
-            difficultyFilterContainer.appendChild(btn);
-        });
-    }
-    
-    function getDifficultyBadgeColor(difficulty) {
-        switch (difficulty?.toLowerCase()) {
-            case 'beginner': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-            case 'intermediate': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-            case 'advanced': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+        },
+        init: function() {
+            this.createButtons(DOM.filterContainer, AppConfig.genres, 'currentGenreFilter');
+            this.createButtons(DOM.difficultyFilterContainer, ['All', ...AppConfig.difficulties], 'currentDifficultyFilter');
         }
-    }
+    };
 
-
-    function populateSongs() {
-      const searchTerm = searchBar.value.toLowerCase();
-      songGrid.innerHTML = '';
-
-      let songsToDisplay = [...songData]; // Use a copy to avoid modifying original songData array due to sort
-
-      if (currentGenreFilter === 'My Favorites') {
-          songsToDisplay = songsToDisplay.filter(song => isFavorite(song.id));
-      } else if (currentGenreFilter !== 'All') {
-          songsToDisplay = songsToDisplay.filter(song => song.genre === currentGenreFilter);
-      }
-
-      if (currentDifficultyFilter !== 'All') {
-          songsToDisplay = songsToDisplay.filter(song => song.difficulty === currentDifficultyFilter);
-      }
-      
-      if (searchTerm) {
-          songsToDisplay = songsToDisplay.filter(song => 
-              song.title.toLowerCase().includes(searchTerm) ||
-              song.artist.toLowerCase().includes(searchTerm)
-          );
-      }
-      
-      if (songsToDisplay.length === 0) {
-        noResultsDiv.classList.remove('hidden');
-      } else {
-        noResultsDiv.classList.add('hidden');
-      }
-
-      songsToDisplay.sort((a, b) => a.title.localeCompare(b.title));
-
-      songsToDisplay.forEach(song => {
-        const card = document.createElement('div');
-        card.className = `
-          bg-light-surface dark:bg-dark-surface
-          rounded-xl shadow-md border border-gray-200 dark:border-gray-700
-          p-5 flex flex-col 
-          transition-all duration-300 ease-in-out
-          hover:shadow-xl hover:border-indigo-500 dark:hover:border-indigo-600 relative group h-40 
-        `; // Added dark:hover:border-indigo-600 for dark mode consistency
-        
-        const difficultyBadge = song.difficulty ? `<span class="absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full ${getDifficultyBadgeColor(song.difficulty)}">${song.difficulty}</span>` : '<span class="absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">N/A</span>';
-        
-        const favoriteButtonHTML = `
-            <button class="favorite-btn favorite-btn-card absolute top-2 right-2 p-1.5 rounded-full hover:bg-light-highlight dark:hover:bg-dark-highlight transition-colors z-10" data-song-id="${song.id}" title="${isFavorite(song.id) ? 'Remove from Favorites' : 'Add to Favorites'}">
-                <svg class="w-5 h-5 text-gray-400 group-hover:text-red-500" fill="${isFavorite(song.id) ? '#ef4444' : 'none'}" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-            </button>
-        `;
-
-        card.innerHTML = `
-          ${difficultyBadge}
-          ${favoriteButtonHTML}
-          <button type="button" class="w-full text-left focus:outline-none mt-4 flex-grow flex flex-col justify-center items-start"> 
-            <h3 class="text-lg font-bold tracking-tight text-light-text dark:text-dark-text group-hover:text-indigo-600 dark:group-hover:text-indigo-400">${song.title}</h3>
-            <p class="text-light-subtle dark:text-dark-subtle text-sm">${song.artist}</p>
-          </button>
-        `;
-        
-        card.querySelector('button[type="button"]').addEventListener('click', () => openModal(song.id));
-        
-        const favBtn = card.querySelector('.favorite-btn-card');
-        updateFavoriteButtonState(favBtn, song.id); 
-        favBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); 
-            toggleFavorite(song.id, favBtn);
-        });
-
-        songGrid.appendChild(card);
-      });
-    }
-
-    // --- Modal Logic ---
-
-    function openModal(songId) {
-      const song = songData.find(s => s.id === songId);
-      if (!song) return;
-
-      currentModalSongId = song.id; 
-
-      modalTitle.textContent = song.title;
-      modalArtist.textContent = `By ${song.artist}`;
-      
-      if (song.bpm) {
-        modalBpm.textContent = `Tempo: ${song.bpm} BPM`;
-        modalBpm.classList.remove('hidden');
-      } else {
-        modalBpm.textContent = '';
-        modalBpm.classList.add('hidden');
-      }
-
-      modalFavoriteBtn.dataset.songId = song.id; 
-      updateFavoriteButtonState(modalFavoriteBtn, song.id);
-
-
-      modalChords.innerHTML = '';
-      const sections = song.chords ? Object.keys(song.chords) : [];
-      
-      if (sections.length === 0) {
-        modalChords.innerHTML = `<p class="modal-placeholder">No chords available for this song yet.</p>`;
-      } else {
-        sections.forEach(section => {
-            const chords = song.chords[section];
-            if (!chords || chords.length === 0) return;
-
-            const sectionBlock = document.createElement('div');
-            sectionBlock.className = 'mb-6';
-
-            const sectionTitleEl = document.createElement('h4');
-            sectionTitleEl.className = 'text-xl font-semibold mb-3 border-b border-gray-200 dark:border-gray-600 pb-2 capitalize'; // Added capitalize
-            sectionTitleEl.textContent = section;
-            sectionBlock.appendChild(sectionTitleEl);
-
-            const chordWrap = document.createElement('div');
-            chordWrap.className = 'flex flex-wrap gap-x-3 gap-y-4';
-
-            chords.forEach(chord => {
-            const chordItem = document.createElement('div');
-            chordItem.className = 'flex flex-col items-center'; 
-
-            const span = document.createElement('span');
-            span.className = `
-                inline-flex items-center gap-2 px-4 py-2
-                bg-indigo-100 dark:bg-indigo-900
-                text-indigo-800 dark:text-indigo-100
-                rounded-full font-medium text-sm shadow-sm
-                transform hover:scale-110 transition-transform
+    // --- SONG CARD AND LIST RENDERING ---
+    const SongRenderer = {
+        getDifficultyVisuals: function(difficulty) {
+            const difficultyIndex = AppConfig.difficulties.indexOf(difficulty);
+            let visualHtml = '';
+            if (difficultyIndex !== -1) {
+                const totalDifficultyLevels = AppConfig.difficulties.length;
+                let dots = '';
+                const badgeColorClasses = this.getDifficultyBadgeColor(difficulty);
+                const filledColorLight = badgeColorClasses.split(' ').find(c => c.startsWith('text-') && !c.includes('dark:text-')) || 'text-indigo-600';
+                const filledColorDark = badgeColorClasses.split(' ').find(c => c.startsWith('dark:text-')) || 'dark:text-indigo-400';
+                const emptyColor = 'text-gray-300 dark:text-gray-500';
+                for (let i = 0; i < totalDifficultyLevels; i++) {
+                    if (i <= difficultyIndex) {
+                        dots += `<span class="${filledColorLight} ${filledColorDark.replace('dark:','') }">●</span>`;
+                    } else {
+                        dots += `<span class="${emptyColor}">○</span>`;
+                    }
+                }
+                visualHtml = `<span class="difficulty-dots" aria-label="${difficulty}">${dots}</span><span class="sr-only"> ${difficulty}</span>`;
+            } else {
+                visualHtml = `<span class="text-xs font-semibold px-2 py-0.5 rounded-full ${this.getDifficultyBadgeColor(difficulty)}">${difficulty || 'N/A'}</span>`;
+            }
+            return visualHtml;
+        },
+        getDifficultyBadgeColor: function(difficulty) {
+            switch (difficulty?.toLowerCase()) {
+                case 'beginner': return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
+                case 'intermediate': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
+                case 'advanced': return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
+                default: return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
+            }
+        },
+        createCardHTML: function(song) {
+            const isFav = FavoritesManager.isFavorite(song.id);
+            const difficultyVisual = this.getDifficultyVisuals(song.difficulty);
+            const favoriteButtonHTML = `
+                <button class="favorite-btn favorite-btn-card absolute top-2 right-2 p-1.5 rounded-full hover:bg-light-highlight dark:hover:bg-dark-highlight transition-colors z-10" data-song-id="${song.id}" title="${isFav ? 'Remove from Favorites' : 'Add to Favorites'}" aria-label="${isFav ? 'Remove from Favorites' : 'Add to Favorites'}">
+                    <svg class="w-5 h-5 text-gray-400 group-hover:text-red-500 pointer-events-none" fill="${isFav ? '#ef4444' : 'none'}" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                </button>
             `;
-            span.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path></svg> ${chord}`;
-            chordItem.appendChild(span);
-            
-            chordWrap.appendChild(chordItem);
+            return `
+              <div class="song-card bg-light-surface dark:bg-dark-surface rounded-xl shadow-md border border-gray-200 dark:border-gray-700 p-5 flex flex-col transition-all duration-300 ease-in-out hover:shadow-xl hover:border-indigo-500 dark:hover:border-indigo-600 relative group h-40 cursor-pointer" data-song-id="${song.id}" tabindex="-1" role="button" aria-label="View ${song.title} by ${song.artist}">
+                <div class="absolute top-3 left-3 flex items-center gap-2 pointer-events-none"> ${difficultyVisual} </div>
+                ${favoriteButtonHTML}
+                <div class="song-view-button w-full text-left focus:outline-none mt-auto flex-grow flex flex-col justify-end items-start pointer-events-none">
+                  <h3 class="text-lg font-bold tracking-tight text-light-text dark:text-dark-text group-hover:text-indigo-600 dark:group-hover:text-indigo-400 pointer-events-none">${song.title}</h3>
+                  <p class="text-light-subtle dark:text-dark-subtle text-sm pointer-events-none">${song.artist}</p>
+                </div>
+              </div>
+            `;
+        },
+        populate: function() {
+            const searchTerm = DOM.searchBar.value.toLowerCase().trim();
+            DOM.songGrid.innerHTML = '';
+            AppState.focusedCardIndex = -1;
+            let songsToDisplay = [...AppState.songData];
+            let sortByRecency = false;
+            if (AppState.currentGenreFilter === 'My Favorites') {
+                songsToDisplay = songsToDisplay.filter(song => FavoritesManager.isFavorite(song.id));
+            } else if (AppState.currentGenreFilter === 'Recently Viewed') {
+                const recentSongMap = new Map(AppState.songData.map(song => [song.id, song]));
+                songsToDisplay = AppState.recentlyViewed
+                                    .map(id => recentSongMap.get(id))
+                                    .filter(song => song !== undefined);
+                sortByRecency = true;
+            } else if (AppState.currentGenreFilter !== 'All') {
+                songsToDisplay = songsToDisplay.filter(song => song.genre === AppState.currentGenreFilter);
+            }
+            if (AppState.currentDifficultyFilter !== 'All') {
+                songsToDisplay = songsToDisplay.filter(song => song.difficulty === AppState.currentDifficultyFilter);
+            }
+            if (searchTerm) {
+                songsToDisplay = songsToDisplay.filter(song =>
+                    song.title.toLowerCase().includes(searchTerm) ||
+                    song.artist.toLowerCase().includes(searchTerm)
+                );
+            }
+            DOM.noResultsDiv.classList.toggle('hidden', songsToDisplay.length > 0);
+            if (!sortByRecency) {
+                songsToDisplay.sort((a, b) => a.title.localeCompare(b.title));
+            }
+            const fragment = document.createDocumentFragment();
+            songsToDisplay.forEach(song => {
+                const cardWrapper = document.createElement('div');
+                cardWrapper.innerHTML = this.createCardHTML(song).trim();
+                fragment.appendChild(cardWrapper.firstChild);
             });
-            
-            sectionBlock.appendChild(chordWrap);
-            modalChords.appendChild(sectionBlock);
-        });
-      }
-
-
-      const shareUrl = window.location.href.split('?')[0] + `?songId=${song.id}`; // Basic deeplinking idea
-      const shareText = `Check out the chords for ${song.title} by ${song.artist} on Piano Chord Finder!`;
-
-      shareTwitterBtn.onclick = () => {
-          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
-      };
-      shareFacebookBtn.onclick = () => {
-          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
-      };
-      shareEmailBtn.onclick = () => {
-          window.location.href = `mailto:?subject=${encodeURIComponent(song.title + ' - Piano Chords')}&body=${encodeURIComponent(shareText + '\n' + shareUrl)}`;
-      };
-
-
-      modal.classList.remove('opacity-0', 'pointer-events-none');
-      modal.querySelector('div > div').classList.remove('scale-95'); 
-      document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    }
-
-    function closeModal() {
-      modal.classList.add('opacity-0', 'pointer-events-none');
-      modal.querySelector('div > div').classList.add('scale-95'); 
-      currentModalSongId = null;
-      document.body.style.overflow = ''; // Restore background scrolling
-    }
-
-    // --- Event Listeners & Initialization ---
-
-    closeModalBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !modal.classList.contains('pointer-events-none')) closeModal(); // Only close if modal is open
-    });
-
-    toggleDark.addEventListener('click', () => {
-      document.documentElement.classList.toggle('dark');
-      localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
-    });
-
-    searchBar.addEventListener('input', () => {
-        populateSongs();
-        clearSearchBtn.classList.toggle('hidden', searchBar.value === '');
-    });
-
-    clearSearchBtn.addEventListener('click', () => {
-        searchBar.value = '';
-        clearSearchBtn.classList.add('hidden');
-        populateSongs();
-        searchBar.focus();
-    });
-
-    modalFavoriteBtn.addEventListener('click', () => {
-        if (currentModalSongId !== null) {
-            toggleFavorite(currentModalSongId, modalFavoriteBtn);
-            // The card button will be updated by the toggleFavorite function if not viewing "My Favorites"
+            DOM.songGrid.appendChild(fragment);
         }
-    });
+    };
 
-    document.addEventListener('DOMContentLoaded', () => {
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.documentElement.classList.add('dark');
+    // --- MODAL MANAGEMENT ---
+    const ModalManager = {
+        renderChords: function(songId, transposeOffset) {
+            const song = DataManager.getSongById(songId);
+            if (!song) {
+                DOM.modalChords.innerHTML = `<p class="modal-placeholder">Song data not found.</p>`;
+                return;
+            }
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            DOM.modalChords.innerHTML = '';
+            const sections = song.chords ? Object.keys(song.chords) : [];
+            if (sections.length === 0) {
+                DOM.modalChords.innerHTML = `<p class="modal-placeholder">No chords available for this song yet.</p>`;
+                return;
+            }
+            sections.forEach(section => {
+                const originalChordsInSection = song.chords[section];
+                if (!originalChordsInSection || originalChordsInSection.length === 0) return;
+                const sectionBlock = document.createElement('div');
+                sectionBlock.className = 'mb-4';
+                const sectionTitleEl = document.createElement('h4');
+                sectionTitleEl.className = 'text-xl font-semibold mb-2 border-b border-gray-200 dark:border-gray-600 pb-1 capitalize text-light-text dark:text-dark-text';
+                sectionTitleEl.textContent = section;
+                sectionBlock.appendChild(sectionTitleEl);
+                const chordWrap = document.createElement('div');
+                chordWrap.className = 'flex flex-wrap gap-x-4 gap-y-3';
+                originalChordsInSection.forEach(originalChord => {
+                    const transposedChordString = ChordTransposer.transposeFullChord(originalChord, transposeOffset);
+                    const chordItemContainer = document.createElement('div');
+                    chordItemContainer.className = 'chord-item-container';
+                    const chordTextSpan = document.createElement('span');
+                    chordTextSpan.className = `inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-100 rounded-md font-medium text-sm shadow-sm`;
+                    chordTextSpan.innerHTML = `<svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path></svg> ${transposedChordString}`;
+                    chordItemContainer.appendChild(chordTextSpan);
+                    const notesForSVG = MusicTheory.getNotesForChord(transposedChordString);
+                    if (notesForSVG.length > 0) {
+                       try {
+                            const pianoSVG = PianoKeyDisplay.createSVG(notesForSVG, isDarkMode);
+                            chordItemContainer.appendChild(pianoSVG);
+                       } catch (e) {
+                           console.error("Error creating piano SVG for chord:", transposedChordString, e);
+                       }
+                    }
+                    chordWrap.appendChild(chordItemContainer);
+                });
+                sectionBlock.appendChild(chordWrap);
+                DOM.modalChords.appendChild(sectionBlock);
+            });
+        },
+        updateTransposeButtonStates: function() { // NEW function to manage button disabled states and styles
+            const offset = AppState.currentTransposeOffset;
+            const limit = AppConfig.transposeLimit;
+
+            // Up Button
+            if (offset >= limit) {
+                DOM.transposeUpBtn.disabled = true;
+                DOM.transposeUpBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                DOM.transposeUpBtn.classList.remove('hover:bg-indigo-600', 'dark:hover:bg-indigo-700'); // Use actual configured dark hover color
+            } else {
+                DOM.transposeUpBtn.disabled = false;
+                DOM.transposeUpBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                DOM.transposeUpBtn.classList.add('hover:bg-indigo-600', 'dark:hover:bg-indigo-700');
+            }
+
+            // Down Button
+            if (offset <= -limit) {
+                DOM.transposeDownBtn.disabled = true;
+                DOM.transposeDownBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                DOM.transposeDownBtn.classList.remove('hover:bg-indigo-600', 'dark:hover:bg-indigo-700');
+            } else {
+                DOM.transposeDownBtn.disabled = false;
+                DOM.transposeDownBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                DOM.transposeDownBtn.classList.add('hover:bg-indigo-600', 'dark:hover:bg-indigo-700');
+            }
+             // Ensure hover classes match the initial setup from HTML if you have more specific ones there.
+            // For dark mode, the original HTML has dark:bg-indigo-700 dark:hover:bg-indigo-800.
+            // Let's ensure consistency:
+            if (!DOM.transposeUpBtn.disabled) {
+                DOM.transposeUpBtn.classList.add('dark:bg-indigo-700', 'dark:hover:bg-indigo-800');
+            } else {
+                 DOM.transposeUpBtn.classList.remove('dark:hover:bg-indigo-800');
+            }
+            if (!DOM.transposeDownBtn.disabled) {
+                DOM.transposeDownBtn.classList.add('dark:bg-indigo-700', 'dark:hover:bg-indigo-800');
+            } else {
+                 DOM.transposeDownBtn.classList.remove('dark:hover:bg-indigo-800');
+            }
+        },
+        updateTransposeIndicator: function() {
+            if (AppState.currentTransposeOffset === 0) {
+                DOM.transposeIndicator.textContent = "Original Key";
+                DOM.transposeIndicator.className = 'text-sm text-light-subtle dark:text-dark-subtle italic';
+            } else {
+                const sign = AppState.currentTransposeOffset > 0 ? "+" : "";
+                DOM.transposeIndicator.textContent = `${sign}${AppState.currentTransposeOffset} semitone${Math.abs(AppState.currentTransposeOffset) === 1 ? '' : 's'}`;
+                DOM.transposeIndicator.className = 'text-sm font-semibold text-indigo-700 dark:text-indigo-300';
+            }
+            this.updateTransposeButtonStates(); // Call to update button states
+        },
+        open: function(songId) {
+            const song = DataManager.getSongById(songId);
+            if (!song) return;
+            AppState.activeElementBeforeModal = document.activeElement;
+            AppState.currentModalSongId = song.id;
+            AppState.currentTransposeOffset = 0; // Reset transpose on new song
+            RecentlyViewedManager.add(song.id);
+            DOM.modal.querySelector('div > div').scrollTop = 0;
+            DOM.modalTitle.textContent = song.title;
+            DOM.modalArtist.textContent = `By ${song.artist}`;
+            DOM.transposeAnnouncer.textContent = "";
+            this.updateTransposeIndicator(); // This will also set initial button states
+            if (song.bpm) {
+                DOM.modalBpm.textContent = `Tempo: ${song.bpm} BPM`;
+                DOM.modalBpm.classList.remove('hidden');
+            } else {
+                DOM.modalBpm.textContent = '';
+                DOM.modalBpm.classList.add('hidden');
+            }
+            DOM.modalFavoriteBtn.dataset.songId = song.id;
+            FavoritesManager.updateButtonState(DOM.modalFavoriteBtn, song.id);
+            this.renderChords(song.id, AppState.currentTransposeOffset);
+            const shareUrl = window.location.href.split('?')[0] + `?songId=${song.id}`;
+            const shareText = `Check out the chords for ${song.title} by ${song.artist} on Piano Chord Finder!`;
+            DOM.shareTwitterBtn.onclick = () => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+            DOM.shareFacebookBtn.onclick = () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
+            DOM.shareEmailBtn.onclick = () => window.location.href = `mailto:?subject=${encodeURIComponent(song.title + ' - Piano Chords')}&body=${encodeURIComponent(shareText + '\n' + shareUrl)}`;
+            DOM.modal.classList.remove('opacity-0', 'pointer-events-none');
+            DOM.modal.querySelector('div > div').classList.remove('scale-95');
+            document.body.style.overflow = 'hidden';
+            DOM.closeModalBtn.focus();
+        },
+        close: function() {
+            DOM.modal.classList.add('opacity-0', 'pointer-events-none');
+            DOM.modal.querySelector('div > div').classList.add('scale-95');
+            AppState.currentModalSongId = null;
+            AppState.currentTransposeOffset = 0;
+            DOM.transposeAnnouncer.textContent = "";
+            DOM.transposeIndicator.textContent = "";
+            document.body.style.overflow = '';
+            if (AppState.activeElementBeforeModal) {
+                AppState.activeElementBeforeModal.focus();
+                AppState.activeElementBeforeModal = null;
+            }
+        },
+        handleTranspose: function(semitones) {
+            if (AppState.currentModalSongId === null) return;
+
+            const newOffset = AppState.currentTransposeOffset + semitones;
+
+            // Enforce transpose limits
+            if (newOffset > AppConfig.transposeLimit || newOffset < -AppConfig.transposeLimit) {
+                this.updateTransposeButtonStates(); // Ensure buttons reflect the unchangable state
+                return; // Do not transpose further
+            }
+
+            AppState.currentTransposeOffset = newOffset;
+            this.renderChords(AppState.currentModalSongId, AppState.currentTransposeOffset);
+            this.updateTransposeIndicator(); // This will update text and button states
+
+            let offsetText = AppState.currentTransposeOffset === 0 ? "Original Key" :
+                             (AppState.currentTransposeOffset > 0 ? `+${AppState.currentTransposeOffset}` : AppState.currentTransposeOffset.toString()) +
+                             ` semitone${Math.abs(AppState.currentTransposeOffset) === 1 ? '' : 's'}`;
+            DOM.transposeAnnouncer.textContent = `Chords transposed. Current offset: ${offsetText}.`;
+        },
+        resetTranspose: function() {
+            if (AppState.currentModalSongId === null) return;
+            AppState.currentTransposeOffset = 0;
+            this.renderChords(AppState.currentModalSongId, AppState.currentTransposeOffset);
+            this.updateTransposeIndicator(); // This will update text and button states
+            DOM.transposeAnnouncer.textContent = "Chords reset to original key.";
         }
-        loadFavorites();
-        createGenreFilterButtons();
-        createDifficultyFilterButtons();
-        populateSongs();
+    };
 
-        // Bonus: Check for URL parameters to auto-open a song
-        const urlParams = new URLSearchParams(window.location.search);
-        const songIdToOpen = urlParams.get('songId');
-        if (songIdToOpen) {
-            const songToOpen = songData.find(s => s.id == parseInt(songIdToOpen));
-            if (songToOpen) {
-                openModal(songToOpen.id);
+    // --- THEME MANAGEMENT ---
+    const ThemeManager = {
+        init: function() {
+            const isDarkMode = localStorage.getItem('darkMode_v2') === 'true';
+            if (isDarkMode) document.documentElement.classList.add('dark');
+            DOM.toggleDarkBtn.setAttribute('aria-pressed', isDarkMode.toString());
+        },
+        toggle: function() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode_v2', isDark);
+            DOM.toggleDarkBtn.setAttribute('aria-pressed', isDark.toString());
+            if (AppState.currentModalSongId !== null && !DOM.modal.classList.contains('pointer-events-none')) {
+                ModalManager.renderChords(AppState.currentModalSongId, AppState.currentTransposeOffset);
+                 // Re-apply button states if theme change affects their appearance (though Tailwind should handle this)
+                ModalManager.updateTransposeButtonStates();
             }
         }
-    });
-  </script>
+    };
+
+    // --- EVENT LISTENERS ---
+    const EventListeners = {
+        initModalKeys: function() {
+            document.addEventListener('keydown', (e) => {
+                if (DOM.modal.classList.contains('pointer-events-none')) return;
+                if (e.key === '=' || e.key === '+') {
+                    e.preventDefault();
+                    ModalManager.handleTranspose(1); // Limit handled within function
+                } else if (e.key === '-' || e.key === '_') {
+                    e.preventDefault();
+                    ModalManager.handleTranspose(-1); // Limit handled within function
+                } else if (e.key === '0' || e.key === 'r' || e.key === 'R') {
+                    if(document.activeElement !== DOM.searchBar) {
+                        e.preventDefault();
+                        ModalManager.resetTranspose();
+                    }
+                }
+            });
+        },
+        initGridNavigationKeys: function() {
+            DOM.songGrid.addEventListener('keydown', (e) => {
+                const cards = Array.from(DOM.songGrid.querySelectorAll('.song-card'));
+                if (cards.length === 0) return;
+                let newIndex = AppState.focusedCardIndex;
+                const gridStyles = window.getComputedStyle(DOM.songGrid);
+                const columnCount = gridStyles.getPropertyValue('grid-template-columns').split(' ').length;
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    if (AppState.focusedCardIndex + 1 < cards.length) newIndex = AppState.focusedCardIndex + 1;
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                     if (AppState.focusedCardIndex - 1 >= 0) newIndex = AppState.focusedCardIndex - 1;
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    newIndex = AppState.focusedCardIndex + columnCount;
+                    if (newIndex >= cards.length) newIndex = cards.length -1;
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    newIndex = AppState.focusedCardIndex - columnCount;
+                     if (newIndex < 0) newIndex = 0;
+                } else if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    if (AppState.focusedCardIndex >= 0 && cards[AppState.focusedCardIndex]) {
+                        const songId = parseInt(cards[AppState.focusedCardIndex].dataset.songId);
+                        ModalManager.open(songId);
+                    }
+                    return;
+                } else if (e.key === 'Home') {
+                    e.preventDefault(); newIndex = 0;
+                } else if (e.key === 'End') {
+                    e.preventDefault(); newIndex = cards.length - 1;
+                } else { return; }
+                newIndex = Math.max(0, Math.min(cards.length - 1, newIndex));
+                if (newIndex !== AppState.focusedCardIndex || (AppState.focusedCardIndex === -1 && newIndex === 0) ) {
+                    AppState.focusedCardIndex = newIndex;
+                    if (cards[AppState.focusedCardIndex]) cards[AppState.focusedCardIndex].focus();
+                }
+            });
+            DOM.songGrid.addEventListener('focus', () => {
+                if (AppState.focusedCardIndex === -1) {
+                    const cards = Array.from(DOM.songGrid.querySelectorAll('.song-card'));
+                    if (cards.length > 0) {
+                        AppState.focusedCardIndex = 0;
+                        cards[0].focus();
+                    }
+                }
+            }, { once: true });
+        },
+        init: function() {
+            DOM.closeModalBtn.addEventListener('click', ModalManager.close);
+            DOM.modal.addEventListener('click', (e) => { if (e.target === DOM.modal) ModalManager.close(); });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !DOM.modal.classList.contains('pointer-events-none')) ModalManager.close();
+            });
+            DOM.toggleDarkBtn.addEventListener('click', ThemeManager.toggle);
+            DOM.searchBar.addEventListener('input', () => {
+                SongRenderer.populate();
+                DOM.clearSearchBtn.classList.toggle('hidden', DOM.searchBar.value === '');
+            });
+            DOM.clearSearchBtn.addEventListener('click', () => {
+                DOM.searchBar.value = '';
+                DOM.clearSearchBtn.classList.add('hidden');
+                SongRenderer.populate();
+                DOM.searchBar.focus();
+            });
+            DOM.modalFavoriteBtn.addEventListener('click', () => {
+                if (AppState.currentModalSongId !== null) {
+                    FavoritesManager.toggle(AppState.currentModalSongId, DOM.modalFavoriteBtn);
+                }
+            });
+            DOM.songGrid.addEventListener('click', (event) => {
+                const songCard = event.target.closest('.song-card');
+                if (!songCard) return;
+                const songId = parseInt(songCard.dataset.songId);
+                if (isNaN(songId)) return;
+                const favoriteButton = event.target.closest('.favorite-btn-card');
+                if (favoriteButton) {
+                    FavoritesManager.toggle(songId, favoriteButton);
+                } else {
+                    ModalManager.open(songId);
+                    const cards = Array.from(DOM.songGrid.querySelectorAll('.song-card'));
+                    AppState.focusedCardIndex = cards.indexOf(songCard);
+                }
+            });
+            DOM.transposeDownBtn.addEventListener('click', () => ModalManager.handleTranspose(-1));
+            DOM.transposeUpBtn.addEventListener('click', () => ModalManager.handleTranspose(1));
+            DOM.transposeResetBtn.addEventListener('click', () => ModalManager.resetTranspose());
+            this.initModalKeys();
+            this.initGridNavigationKeys();
+        }
+    };
+
+    // --- APPLICATION INITIALIZER ---
+    const AppInitializer = {
+        init: function() {
+            ThemeManager.init();
+            DataManager.initializeSongData();
+            FavoritesManager.load();
+            RecentlyViewedManager.load();
+            FilterManager.init();
+            SongRenderer.populate();
+            EventListeners.init();
+            const urlParams = new URLSearchParams(window.location.search);
+            const songIdToOpen = urlParams.get('songId');
+            if (songIdToOpen) {
+                const songToOpen = DataManager.getSongById(parseInt(songIdToOpen));
+                if (songToOpen) ModalManager.open(songToOpen.id);
+                else window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', AppInitializer.init);
+</script>
 </body>
 </html>
