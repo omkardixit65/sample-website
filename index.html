@@ -20,11 +20,13 @@
             'light-surface': '#ffffff',
             'light-text': '#1f2937',
             'light-subtle': '#6b7280',
+            'light-highlight': '#e0e7ff', // Indigo-100 for light mode highlights
             // Dark Mode
             'dark-bg': '#111827',
             'dark-surface': '#1f2937',
             'dark-text': '#f3f4f6',
             'dark-subtle': '#9ca3af',
+            'dark-highlight': '#3730a3', // Indigo-800 for dark mode highlights
           }
         },
       },
@@ -52,6 +54,10 @@
       color: #ffffff !important;
       border-color: #4f46e5 !important;
     }
+    .favorite-btn.favorited svg {
+        fill: #ef4444; /* red-500 */
+        color: #ef4444;
+    }
   </style>
 </head>
 <body class="bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text transition-colors duration-500">
@@ -69,15 +75,26 @@
             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <svg class="h-5 w-5 text-light-subtle dark:text-dark-subtle" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
             </div>
-            <input id="search-bar" type="text" placeholder="Search songs or artists..." class="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-light-surface dark:bg-dark-surface text-light-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow">
+            <input id="search-bar" type="text" placeholder="Search songs or artists..." class="w-full pl-11 pr-10 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-light-surface dark:bg-dark-surface text-light-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-shadow">
+            <button id="clear-search-btn" class="absolute inset-y-0 right-0 pr-3 flex items-center text-light-subtle dark:text-dark-subtle hover:text-light-text dark:hover:text-dark-text transition-colors hidden">
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+            </button>
           </div>
           <button id="toggle-dark" class="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-light-surface dark:bg-dark-surface hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2">
             <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
             <span class="sm:hidden">Toggle Mode</span>
           </button>
         </div>
-        <div id="filter-container" class="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+        <div class="space-y-3">
+          <label class="block text-sm font-medium text-light-subtle dark:text-dark-subtle text-center sm:text-left">Filter by Genre:</label>
+          <div id="filter-container" class="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
           </div>
+        </div>
+        <div class="space-y-3">
+            <label class="block text-sm font-medium text-light-subtle dark:text-dark-subtle text-center sm:text-left">Filter by Difficulty:</label>
+            <div id="difficulty-filter-container" class="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
+            </div>
+        </div>
       </div>
 
       <div id="song-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -104,203 +121,337 @@
   <div id="song-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50 opacity-0 pointer-events-none">
     <div class="bg-light-surface dark:bg-dark-surface w-full max-w-2xl rounded-xl shadow-2xl p-6 md:p-8 relative transform scale-95 text-light-text dark:text-dark-text overflow-y-auto max-h-[90vh]">
       <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-light-text dark:hover:text-dark-text transition text-2xl z-10">✖</button>
-      <h2 id="modal-song-title" class="text-3xl font-bold mb-1"></h2>
-      <p id="modal-song-artist" class="text-lg text-light-subtle dark:text-dark-subtle mb-6 italic"></p>
+      <div class="flex justify-between items-start mb-1">
+        <h2 id="modal-song-title" class="text-3xl font-bold"></h2>
+        <button id="modal-favorite-btn" class="favorite-btn p-2 rounded-full hover:bg-light-highlight dark:hover:bg-dark-highlight transition-colors">
+          <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+        </button>
+      </div>
+      <p id="modal-song-artist" class="text-lg text-light-subtle dark:text-dark-subtle mb-2 italic"></p>
+      <p id="modal-song-bpm" class="text-sm text-light-subtle dark:text-dark-subtle mb-6"></p>
+      
       <div id="modal-song-chords" class="space-y-6 text-base"></div>
+
+      <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <h4 class="text-lg font-semibold mb-3 text-light-text dark:text-dark-text">Share this song:</h4>
+        <div class="flex space-x-3">
+          <button id="share-twitter" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm">Twitter</button>
+          <button id="share-facebook" class="px-4 py-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 transition-colors text-sm">Facebook</button>
+          <button id="share-email" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm">Email</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    const songData = [
-    // POP SONGS
-    { id: 23, title: "Imagine", artist: "John Lennon", genre: "Pop", chords: { "Verse": ["C", "Cmaj7", "F"], "Chorus": ["F", "G", "C", "E7"], "Bridge": null } },
-    { id: 24, title: "Hallelujah", artist: "Leonard Cohen", genre: "Pop", chords: { "Verse": ["C", "Am", "C", "Am"], "Chorus": ["F", "G", "C", "G"], "Bridge": null } },
-    { id: 25, title: "Someone Like You", artist: "Adele", genre: "Pop", chords: { "Verse": ["A", "E", "F#m", "D"], "Chorus": ["A", "E", "F#m", "D"], "Bridge": ["D", "E", "F#m", "E"] } },
-    { id: 26, title: "All of Me", artist: "John Legend", genre: "Pop", chords: { "Verse": ["Em", "C", "G", "D"], "Chorus": ["C", "G", "D", "Em"], "Bridge": ["Am", "Em", "D"] } },
-    { id: 30, title: "Let Her Go", artist: "Passenger", genre: "Pop", chords: { "Verse": ["G", "D", "Em", "C"], "Chorus": ["Em", "C", "G", "D"], "Bridge": null } },
-    { id: 31, title: "Perfect", artist: "Ed Sheeran", genre: "Pop", chords: { "Verse": ["G", "Em", "C", "D"], "Chorus": ["G", "Em", "C", "D"], "Bridge": null } },
-    { id: 32, title: "Stay With Me", artist: "Sam Smith", genre: "Pop", chords: { "Verse": ["Am", "F", "C"], "Chorus": ["Am", "F", "C", "G"], "Bridge": ["F", "Am", "G"] } },
-    { id: 34, title: "You Are My Sunshine", artist: "Traditional", genre: "Pop", chords: { "Verse": ["C", "F", "G7"], "Chorus": ["C", "F", "G7", "C"], "Bridge": null } },
-    { id: 36, title: "Can't Help Falling in Love", artist: "Elvis Presley", genre: "Pop", chords: { "Verse": ["C", "G", "Am", "F", "C", "G"], "Bridge": ["Em", "B7", "Em", "A7", "Dm", "G7"] } },
-    { id: 37, title: "A Thousand Years", artist: "Christina Perri", genre: "Pop", chords: { "Verse": ["Bb", "Gm", "Eb", "F"], "Chorus": ["Bb", "F", "Gm", "Eb", "F"], "Bridge": ["Gm", "Eb", "Bb", "F"] } },
-    { id: 54, title: "Rolling in the Deep", artist: "Adele", genre: "Pop", chords: { "Verse": ["Cm", "G", "Bb", "Eb"], "Chorus": ["Cm", "Ab", "Eb", "Bb"], "Bridge": ["Ab", "Eb", "Bb", "Cm"] } },
-    { id: 55, title: "Shape of You", artist: "Ed Sheeran", genre: "Pop", chords: { "Verse": ["C#m", "F#m", "A", "B"], "Chorus": ["C#m", "F#m", "A", "B"], "Bridge": null } },
-    { id: 56, title: "Uptown Funk", artist: "Mark Ronson ft. Bruno Mars", genre: "Pop", chords: { "Verse": ["Dm7", "G7"], "Chorus": ["Dm7", "G7", "C", "F"], "Bridge": null } },
-    { id: 57, title: "Blinding Lights", artist: "The Weeknd", genre: "Pop", chords: { "Verse": ["Fm", "Cm", "Eb", "Bb"], "Chorus": ["Fm", "Cm", "Eb", "Bb"], "Bridge": null } },
-    { id: 58, title: "Someone You Loved", artist: "Lewis Capaldi", genre: "Pop", chords: { "Verse": ["C", "G", "Am", "F"], "Chorus": ["C", "G", "Am", "F"], "Bridge": null } },
-    { id: 59, title: "Watermelon Sugar", artist: "Harry Styles", genre: "Pop", chords: { "Verse": ["Dm", "Am", "C", "G"], "Chorus": ["Dm", "Am", "C", "G"], "Bridge": null } },
-    { id: 60, title: "Bad Guy", artist: "Billie Eilish", genre: "Pop", chords: { "Verse": ["Em", "D", "G"], "Chorus": ["Em", "G", "Am"], "Bridge": null } },
-    { id: 61, title: "Shake It Off", artist: "Taylor Swift", genre: "Pop", chords: { "Verse": ["Am", "C", "G"], "Chorus": ["Am", "C", "G", "F"], "Bridge": ["F", "C", "G", "Am"] } },
-    { id: 62, title: "Happy", artist: "Pharrell Williams", genre: "Pop", chords: { "Verse": ["Fm", "Db", "Ab", "Eb"], "Chorus": ["Fm", "Db", "Ab", "Eb"], "Bridge": null } },
-    { id: 63, title: "Call Me Maybe", artist: "Carly Rae Jepsen", genre: "Pop", chords: { "Verse": ["G", "Em", "C", "D"], "Chorus": ["G", "D", "Em", "C"], "Bridge": ["Am", "Em", "C", "D"] } },
-    { id: 64, title: "Royals", artist: "Lorde", genre: "Pop", chords: { "Verse": ["D", "C", "G"], "Chorus": ["D", "C", "G"], "Bridge": null } },
-    { id: 65, title: "Chandelier", artist: "Sia", genre: "Pop", chords: { "Verse": ["Em", "G", "D", "A"], "Chorus": ["Em", "C", "G", "D"], "Bridge": ["Am", "Em", "C", "D"] } },
+    // Initial set of songs
+    let initialSongData = [
+        // POP SONGS (Existing examples)
+        { id: 23, title: "Imagine", artist: "John Lennon", genre: "Pop", difficulty: "Beginner", bpm: 76, chords: { "Verse": ["C", "Cmaj7", "F"], "Chorus": ["F", "G", "C", "E7"] } },
+        { id: 25, title: "Someone Like You", artist: "Adele", genre: "Pop", difficulty: "Intermediate", bpm: 67, chords: { "Verse": ["A", "E", "F#m", "D"], "Chorus": ["A", "E", "F#m", "D"] } },
+        { id: 31, title: "Perfect", artist: "Ed Sheeran", genre: "Pop", difficulty: "Beginner", bpm: 95, chords: { "Verse": ["G", "Em", "C", "D"], "Chorus": ["G", "Em", "C", "D"] } },
+        { id: 55, title: "Shape of You", artist: "Ed Sheeran", genre: "Pop", chords: { "Verse": ["C#m", "F#m", "A", "B"], "Chorus": ["C#m", "F#m", "A", "B"] } },
+        { id: 57, title: "Blinding Lights", artist: "The Weeknd", genre: "Pop", chords: { "Verse": ["Fm", "Cm", "Eb", "Bb"], "Chorus": ["Fm", "Cm", "Eb", "Bb"] } },
+        { id: 59, title: "Watermelon Sugar", artist: "Harry Styles", genre: "Pop", chords: { "Verse": ["Dm", "Am", "C", "G"], "Chorus": ["Dm", "Am", "C", "G"] } },
+        { id: 60, title: "Bad Guy", artist: "Billie Eilish", genre: "Pop", chords: { "Verse": ["Em", "D", "G"], "Chorus": ["Em", "G", "Am"] } },
+        { id: 61, title: "Shake It Off", artist: "Taylor Swift", genre: "Pop", chords: { "Verse": ["Am", "C", "G"], "Chorus": ["Am", "C", "G", "F"] } },
+        { id: 62, title: "Happy", artist: "Pharrell Williams", genre: "Pop", chords: { "Verse": ["Fm", "Db", "Ab", "Eb"], "Chorus": ["Fm", "Db", "Ab", "Eb"] } },
+        { id: 64, title: "Royals", artist: "Lorde", genre: "Pop", chords: { "Verse": ["D", "C", "G"], "Chorus": ["D", "C", "G"] } },
 
-    // CLASSIC ROCK SONGS
-    { id: 1, title: "Bohemian Rhapsody", artist: "Queen", genre: "Classic Rock", chords: { "Intro": ["Bb", "Gm", "Eb", "F"], "Ballad": ["Bb", "Gm", "Cm", "F"], "Rock": ["Eb", "Bb", "F", "Bb"], "Outro": ["F", "Eb", "Db", "C"] } },
-    { id: 2, title: "Don't Stop Me Now", artist: "Queen", genre: "Classic Rock", chords: { "Verse": ["F", "Am", "Dm", "Gm", "C7"], "Chorus": ["F", "Am", "Dm", "Bb", "F", "C7", "F"], "Bridge": ["Dm", "G7", "C", "A7"] } },
-    { id: 3, title: "We Will Rock You", artist: "Queen", genre: "Classic Rock", chords: { "Verse": ["Em", "D", "C", "B7"], "Chorus": ["G", "D", "C", "G"], "Bridge": null } },
-    { id: 4, title: "Somebody to Love", artist: "Queen", genre: "Classic Rock", chords: { "Intro": ["Ab", "Db", "Ab", "Eb"], "Verse": ["Ab", "Fm", "Db", "Eb"], "Chorus": ["Db", "Ab", "Eb", "Ab"], "Bridge": ["Gb", "Db", "Bbm", "Eb"] } },
-    { id: 5, title: "Another One Bites the Dust", artist: "Queen", genre: "Classic Rock", chords: { "Verse": ["Am", "G"], "Chorus": ["Am", "G", "C", "F"], "Bridge": null } },
-    { id: 14, title: "Stairway to Heaven", artist: "Led Zeppelin", genre: "Classic Rock", chords: { "Intro": ["Am", "G", "C", "D", "F"], "Verse": ["Am", "G", "C", "D"], "Chorus": ["C", "G", "Am", "F"], "Solo": ["Am", "G", "F"] } },
-    { id: 15, title: "Dream On", artist: "Aerosmith", genre: "Classic Rock", chords: { "Verse": ["Fm", "C#", "Eb"], "Chorus": ["Fm", "Ab", "Bb", "C"], "Bridge": null } },
-    { id: 16, title: "Sweet Child O' Mine", artist: "Guns N' Roses", genre: "Classic Rock", chords: { "Verse": ["D", "C", "G"], "Chorus": ["A", "C", "D", "G"], "Bridge": ["Em", "C", "G", "D"] } },
-    { id: 18, title: "Knockin' on Heaven's Door", artist: "Bob Dylan", genre: "Classic Rock", chords: { "Verse": ["G", "D", "Am"], "Chorus": ["G", "D", "C"], "Bridge": null } },
-    { id: 20, title: "Hey Jude", artist: "The Beatles", genre: "Classic Rock", chords: { "Verse": ["F", "C", "C7", "F"], "Bridge": ["Bb", "F", "C", "F"], "Outro": ["F", "Eb", "Bb", "F"] } },
-    { id: 21, title: "Yesterday", artist: "The Beatles", genre: "Classic Rock", chords: { "Verse": ["G", "F#m", "B7", "Em", "D", "C", "G"], "Chorus": ["Em", "A7", "C", "G"], "Bridge": null } },
-    { id: 22, title: "Let It Be", artist: "The Beatles", genre: "Classic Rock", chords: { "Verse": ["C", "G", "Am", "F"], "Chorus": ["F", "C", "G", "C"], "Bridge": ["Am", "G", "F", "C"] } },
-    { id: 35, title: "Take Me Home, Country Roads", artist: "John Denver", genre: "Classic Rock", chords: { "Verse": ["G", "Em", "C", "D"], "Chorus": ["G", "D", "C", "G"], "Bridge": ["Em", "D", "G", "C"] } },
-    { id: 42, title: "Your Song", artist: "Elton John", genre: "Classic Rock", chords: { "Verse": ["Eb", "Ab/Eb", "Bb/D", "Cm"], "Chorus": ["Ab", "Eb", "Fm7", "Bb7"], "Bridge": ["Cm", "Fm", "Bb", "Eb"] } },
-    { id: 43, title: "Piano Man", artist: "Billy Joel", genre: "Classic Rock", chords: { "Verse": ["C", "G", "Am", "G", "F", "C", "G"], "Chorus": ["F", "C", "G", "C"], "Bridge": ["Am", "D", "G"] } },
-    { id: 44, title: "Hotel California", artist: "Eagles", genre: "Classic Rock", chords: { "Verse": ["Am", "E7", "G", "D", "F", "C", "Dm", "E"], "Chorus": ["F", "C", "E7", "Am"], "Bridge": null } },
-    { id: 45, title: "Africa", artist: "Toto", genre: "Classic Rock", chords: { "Verse": ["A", "C#m", "G#m", "F#m"], "Chorus": ["F#m", "D", "A", "E"], "Bridge": ["Bm", "E", "A"] } },
-    { id: 66, title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", genre: "Classic Rock", chords: { "Verse": ["D", "C", "G"], "Chorus": ["D", "C", "G"], "Bridge": null } },
-    { id: 67, title: "More Than a Feeling", artist: "Boston", genre: "Classic Rock", chords: { "Verse": ["G", "C", "Em", "D"], "Chorus": ["G", "C", "Em", "D"], "Bridge": ["Am", "C", "G", "D"] } },
-    { id: 68, title: "Paint It Black", artist: "The Rolling Stones", genre: "Classic Rock", chords: { "Verse": ["Em", "D", "G", "A"], "Chorus": ["Em", "B7"], "Bridge": null } },
-    { id: 69, title: "Come Together", artist: "The Beatles", genre: "Classic Rock", chords: { "Verse": ["Dm", "A7", "G7"], "Chorus": ["Bm", "G", "A"], "Bridge": null } },
-    { id: 70, title: "Fortunate Son", artist: "Creedence Clearwater Revival", genre: "Classic Rock", chords: { "Verse": ["G", "C", "D"], "Chorus": ["G", "F", "C", "G"], "Bridge": null } },
-    
-    // GRUNGE SONGS
-    { id: 6, title: "Smells Like Teen Spirit", artist: "Nirvana", genre: "Grunge", chords: { "Verse": ["Fm", "Bb", "G#", "C#"], "Chorus": ["Fm", "Bb", "G#", "C#"], "Bridge": null } },
-    { id: 7, title: "Come As You Are", artist: "Nirvana", genre: "Grunge", chords: { "Verse": ["F#m", "A", "D", "E"], "Chorus": ["F#m", "A", "D", "E"], "Bridge": null } },
-    { id: 8, title: "Black Hole Sun", artist: "Soundgarden", genre: "Grunge", chords: { "Verse": ["A", "G", "D", "A"], "Chorus": ["E", "C", "G", "D"], "Bridge": ["F", "C", "G", "D"] } },
-    { id: 9, title: "Man in the Box", artist: "Alice in Chains", genre: "Grunge", chords: { "Verse": ["E", "G", "A", "C"], "Chorus": ["E", "G", "D", "A"], "Bridge": null } },
-    { id: 10, title: "Would?", artist: "Alice in Chains", genre: "Grunge", chords: { "Verse": ["F#m", "G", "A"], "Chorus": ["F#m", "D", "E"], "Bridge": null } },
-    { id: 11, title: "Plush", artist: "Stone Temple Pilots", genre: "Grunge", chords: { "Verse": ["G", "D/F#", "Em", "C"], "Chorus": ["G", "C", "D"], "Bridge": ["Am", "C", "G", "D"] } },
-    { id: 12, title: "Alive", artist: "Pearl Jam", genre: "Grunge", chords: { "Verse": ["A", "G", "D"], "Chorus": ["E", "G", "D", "A"], "Bridge": null } },
-    { id: 71, title: "Lithium", artist: "Nirvana", genre: "Grunge", chords: { "Verse": ["E", "G#", "C#m", "A"], "Chorus": ["E", "G#", "C#m", "A"], "Bridge": ["D", "A", "C", "G"] } },
-    { id: 72, title: "Jeremy", artist: "Pearl Jam", genre: "Grunge", chords: { "Verse": ["A", "G", "C", "D"], "Chorus": ["A", "G", "C", "D"], "Bridge": ["F", "G", "A"] } },
-    { id: 73, title: "Rooster", artist: "Alice in Chains", genre: "Grunge", chords: { "Verse": ["F#m", "A", "E"], "Chorus": ["D", "A", "E", "F#m"], "Bridge": null } },
-    { id: 74, title: "Hunger Strike", artist: "Temple of the Dog", genre: "Grunge", chords: { "Verse": ["G", "D", "C"], "Chorus": ["G", "D", "C"], "Bridge": null } },
-    { id: 75, title: "Interstate Love Song", artist: "Stone Temple Pilots", genre: "Grunge", chords: { "Verse": ["E", "A", "G#m", "C#m"], "Chorus": ["A", "E", "B", "C#m"], "Bridge": ["F#m", "A", "E"] } },
-    { id: 76, title: "Even Flow", artist: "Pearl Jam", genre: "Grunge", chords: { "Verse": ["D", "G", "A"], "Chorus": ["D", "C", "G"], "Bridge": null } },
-    { id: 77, title: "Fell on Black Days", artist: "Soundgarden", genre: "Grunge", chords: { "Verse": ["E", "D", "A", "G"], "Chorus": ["C", "G", "D", "A"], "Bridge": null } },
-    { id: 78, title: "Nutshell", artist: "Alice in Chains", genre: "Grunge", chords: { "Verse": ["Em", "G", "D", "C"], "Chorus": ["Em", "G", "D", "C"], "Bridge": null } },
-    { id: 79, title: "In Bloom", artist: "Nirvana", genre: "Grunge", chords: { "Verse": ["Bb", "Gm", "Eb", "Ab"], "Chorus": ["Bb", "Gm", "Eb", "Ab"], "Bridge": ["Gb", "Db", "B", "E"] } },
-    { id: 80, title: "Daughter", artist: "Pearl Jam", genre: "Grunge", chords: { "Verse": ["G", "C", "D"], "Chorus": ["G", "C", "D"], "Bridge": null } },
-    { id: 81, title: "Spoonman", artist: "Soundgarden", genre: "Grunge", chords: { "Verse": ["D", "A", "G", "C"], "Chorus": ["D", "G", "C"], "Bridge": null } },
-    { id: 82, title: "Down in a Hole", artist: "Alice in Chains", genre: "Grunge", chords: { "Verse": ["A", "C", "G", "D"], "Chorus": ["F", "C", "G", "A"], "Bridge": null } },
-    { id: 83, title: "Creep (STP)", artist: "Stone Temple Pilots", genre: "Grunge", chords: { "Verse": ["E", "G", "D", "A"], "Chorus": ["E", "G", "D", "A"], "Bridge": null } }, // Renamed to avoid conflict
+        // CLASSIC ROCK SONGS (Existing examples)
+        { id: 1, title: "Bohemian Rhapsody", artist: "Queen", genre: "Classic Rock", difficulty: "Advanced", bpm: 72, chords: { "Intro": ["Bb", "Gm", "Eb", "F"], "Ballad": ["Bb", "Gm", "Cm", "F"] } },
+        { id: 14, title: "Stairway to Heaven", artist: "Led Zeppelin", genre: "Classic Rock", difficulty: "Advanced", chords: { "Intro": ["Am", "G", "C", "D", "F"], "Verse": ["Am", "G", "C", "D"] } },
+        { id: 16, title: "Sweet Child O' Mine", artist: "Guns N' Roses", genre: "Classic Rock", chords: { "Verse": ["D", "C", "G"], "Chorus": ["A", "C", "D", "G"] } },
+        { id: 18, title: "Knockin' on Heaven's Door", artist: "Bob Dylan", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["G", "D", "Am"], "Chorus": ["G", "D", "C"] } },
+        { id: 20, title: "Hey Jude", artist: "The Beatles", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["F", "C", "C7", "F"], "Outro": ["F", "Eb", "Bb", "F"] } },
+        { id: 22, title: "Let It Be", artist: "The Beatles", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["C", "G", "Am", "F"], "Chorus": ["F", "C", "G", "C"] } },
+        { id: 43, title: "Piano Man", artist: "Billy Joel", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["C", "G", "Am", "G", "F", "C", "G"], "Chorus": ["F", "C", "G", "C"] } },
+        { id: 44, title: "Hotel California", artist: "Eagles", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["Am", "E7", "G", "D", "F", "C", "Dm", "E"], "Chorus": ["F", "C", "E7", "Am"] } },
+        { id: 66, title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["D", "C", "G"], "Chorus": ["D", "C", "G"] } },
+        { id: 67, title: "More Than a Feeling", artist: "Boston", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["G", "C", "Em", "D"], "Chorus": ["G", "C", "Em", "D"] } },
+        
+        // GRUNGE (Existing examples)
+        { id: 6, title: "Smells Like Teen Spirit", artist: "Nirvana", genre: "Grunge", difficulty: "Intermediate", chords: { "Verse": ["Fm", "Bb", "G#", "C#"] } },
+        { id: 8, title: "Black Hole Sun", artist: "Soundgarden", genre: "Grunge", chords: { "Verse": ["A", "G", "D", "A"] } },
+        { id: 11, title: "Plush", artist: "Stone Temple Pilots", genre: "Grunge", chords: { "Verse": ["G", "D/F#", "Em", "C"] } },
+        { id: 12, title: "Alive", artist: "Pearl Jam", genre: "Grunge", chords: { "Verse": ["A", "G", "D"] } },
+        { id: 71, title: "Lithium", artist: "Nirvana", genre: "Grunge", chords: { "Verse": ["E", "G#", "C#m", "A"] } },
 
-    // ALTERNATIVE & INDIE SONGS
-    { id: 13, title: "Watch Over You", artist: "Alter Bridge", genre: "Alternative & Indie", chords: { "Verse": ["G", "D", "Em", "C"], "Chorus": ["G", "D", "Em", "C"], "Bridge": ["Am", "C", "G", "D"] } },
-    { id: 17, title: "Everlong", artist: "Foo Fighters", genre: "Alternative & Indie", chords: { "Verse": ["Dmaj7", "Bm7", "G"], "Chorus": ["D", "A", "G"], "Bridge": ["C", "G", "D"] } },
-    { id: 27, title: "Clocks", artist: "Coldplay", genre: "Alternative & Indie", chords: { "Verse": ["Eb", "Bbm", "Fm"], "Chorus": ["Eb", "Bbm", "Fm"], "Bridge": null } },
-    { id: 38, title: "Mr. Brightside", artist: "The Killers", genre: "Alternative & Indie", chords: { "Verse": ["C", "G", "F"], "Chorus": ["Db", "Ab", "Eb", "Bbm"], "Bridge": ["F", "C", "G"] } },
-    { id: 39, title: "Wonderwall", artist: "Oasis", genre: "Alternative & Indie", chords: { "Verse": ["F#m", "A", "E", "B"], "Chorus": ["D", "E", "F#m", "A"], "Bridge": ["D", "E", "F#m"] } },
-    { id: 40, title: "Ho Hey", artist: "The Lumineers", genre: "Alternative & Indie", chords: { "Verse": ["C", "G", "Am", "F"], "Chorus": ["F", "C", "G"], "Bridge": null } },
-    { id: 41, title: "Dog Days Are Over", artist: "Florence + The Machine", genre: "Alternative & Indie", chords: { "Verse": ["G", "C", "Em", "D"], "Chorus": ["G", "C", "Em", "D"], "Bridge": ["Am", "G", "C"] } },
-    { id: 84, title: "The Scientist", artist: "Coldplay", genre: "Alternative & Indie", chords: { "Verse": ["Dm7", "Bb", "F", "Fsus2"], "Chorus": ["Dm7", "Bb", "F", "Fsus2"], "Bridge": ["C", "G", "Dm", "F"] } },
-    { id: 85, title: "Creep (Radiohead)", artist: "Radiohead", genre: "Alternative & Indie", chords: { "Verse": ["G", "B", "C", "Cm"], "Chorus": ["G", "B", "C", "Cm"], "Bridge": null } }, // Renamed to avoid conflict
-    { id: 86, title: "Take Me Out", artist: "Franz Ferdinand", genre: "Alternative & Indie", chords: { "Verse": ["Em", "A", "G"], "Chorus": ["Em", "A", "G", "D"], "Bridge": ["C", "G", "D", "A"] } },
-    { id: 87, title: "Seven Nation Army", artist: "The White Stripes", genre: "Alternative & Indie", chords: { "Verse": ["Em", "G", "C", "B"], "Chorus": ["Em", "G", "C", "B"], "Bridge": null } },
-    { id: 88, title: "Yellow", artist: "Coldplay", genre: "Alternative & Indie", chords: { "Verse": ["G", "D", "C", "G"], "Chorus": ["G", "D", "Em", "C"], "Bridge": ["Am", "Em", "C", "G"] } },
-    { id: 89, title: "Last Nite", artist: "The Strokes", genre: "Alternative & Indie", chords: { "Verse": ["C", "F", "G"], "Chorus": ["C", "F", "G"], "Bridge": null } },
-    { id: 90, title: "Float On", artist: "Modest Mouse", genre: "Alternative & Indie", chords: { "Verse": ["F", "C", "Dm", "A"], "Chorus": ["F", "C", "Dm", "A"], "Bridge": null } },
-    { id: 91, title: "Pumped Up Kicks", artist: "Foster The People", genre: "Alternative & Indie", chords: { "Verse": ["Em", "G", "D", "A"], "Chorus": ["Em", "G", "D", "A"], "Bridge": null } },
-    { id: 92, title: "Use Somebody", artist: "Kings of Leon", genre: "Alternative & Indie", chords: { "Verse": ["C", "G", "D", "Em"], "Chorus": ["C", "G", "D"], "Bridge": ["Am", "C", "G", "D"] } },
-    { id: 93, title: "Zombie", artist: "The Cranberries", genre: "Alternative & Indie", chords: { "Verse": ["Em", "C", "G", "D"], "Chorus": ["Em", "C", "G", "D"], "Bridge": null } },
-    { id: 94, title: "Karma Police", artist: "Radiohead", genre: "Alternative & Indie", chords: { "Verse": ["Am", "Dm", "G", "C"], "Chorus": ["F", "C", "G", "Am"], "Bridge": ["Bm", "D", "G", "E"] } },
-    { id: 95, title: "Sex on Fire", artist: "Kings of Leon", genre: "Alternative & Indie", chords: { "Verse": ["E", "A", "C#m", "B"], "Chorus": ["E", "A", "C#m", "B"], "Bridge": ["F#m", "A", "E", "B"] } },
-    { id: 96, title: "Riptide", artist: "Vance Joy", genre: "Alternative & Indie", chords: { "Verse": ["Am", "G", "C"], "Chorus": ["Am", "G", "C", "F"], "Bridge": ["F", "C", "G", "Am"] } },
+        // ALTERNATIVE & INDIE (Existing examples)
+        { id: 17, title: "Everlong", artist: "Foo Fighters", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Verse": ["Dmaj7", "Bm7", "G"] } },
+        { id: 27, title: "Clocks", artist: "Coldplay", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Verse": ["Eb", "Bbm", "Fm"] } },
+        { id: 38, title: "Mr. Brightside", artist: "The Killers", genre: "Alternative & Indie", chords: { "Chorus": ["Db", "Ab", "Eb", "Bbm"] } },
+        { id: 39, title: "Wonderwall", artist: "Oasis", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["F#m", "A", "E", "B"] } },
+        { id: 85, title: "Creep (Radiohead)", artist: "Radiohead", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["G", "B", "C", "Cm"] } }, // Corrected artist for clarity in UI if needed
+        { id: 88, title: "Yellow", artist: "Coldplay", genre: "Alternative & Indie", chords: { "Verse": ["G", "D", "C", "G"] } },
+        { id: 93, title: "Zombie", artist: "The Cranberries", genre: "Alternative & Indie", chords: { "Verse": ["Em", "C", "G", "D"] } },
+        { id: 96, title: "Riptide", artist: "Vance Joy", genre: "Alternative & Indie", chords: { "Verse": ["Am", "G", "C"] } },
 
-    // R&B / SOUL SONGS
-    { id: 19, title: "Stand by Me", artist: "Ben E. King", genre: "R&B / Soul", chords: { "Verse": ["G", "Em", "C", "D"], "Chorus": ["G", "Em", "C", "D"], "Bridge": null } },
-    { id: 28, title: "Lean on Me", artist: "Bill Withers", genre: "R&B / Soul", chords: { "Verse": ["C", "F", "G"], "Chorus": ["C", "G", "C"], "Bridge": null } },
-    { id: 46, title: "Ain't No Sunshine", artist: "Bill Withers", genre: "R&B / Soul", chords: { "Verse": ["Am", "Em", "G"], "Chorus": ["Am", "G", "C"], "Bridge": null } },
-    { id: 47, title: "If I Ain't Got You", artist: "Alicia Keys", genre: "R&B / Soul", chords: { "Verse": ["G", "Em7", "Am7", "D7"], "Chorus": ["Cmaj7", "Bm7", "Am7", "G"], "Bridge": ["Am7", "Bm7", "Cmaj7", "D7"] } },
-    { id: 48, title: "Isn't She Lovely", artist: "Stevie Wonder", genre: "R&B / Soul", chords: { "Verse": ["C#m7", "F#7", "B", "E"], "Chorus": ["A", "G#7", "C#m7", "F#7"], "Bridge": null } },
-    { id: 49, title: "Easy", artist: "Commodores", genre: "R&B / Soul", chords: { "Verse": ["Ab", "Db", "Bbm", "Eb"], "Chorus": ["Fm", "Db", "Ab", "Eb"], "Bridge": ["Gb", "Db", "Ab"] } },
-    { id: 97, title: "My Girl", artist: "The Temptations", genre: "R&B / Soul", chords: { "Verse": ["C", "F", "G"], "Chorus": ["C", "F", "G"], "Bridge": null } },
-    { id: 98, title: "Sittin' On The Dock of the Bay", artist: "Otis Redding", genre: "R&B / Soul", chords: { "Verse": ["G", "B7", "C", "A"], "Chorus": ["G", "E"], "Bridge": ["D", "C", "G"] } },
-    { id: 99, title: "I Heard It Through the Grapevine", artist: "Marvin Gaye", genre: "R&B / Soul", chords: { "Verse": ["Ebm", "Ab", "Db", "Gb"], "Chorus": ["Ebm", "Ab", "Db", "Gb"], "Bridge": null } },
-    { id: 100, title: "Respect", artist: "Aretha Franklin", genre: "R&B / Soul", chords: { "Verse": ["G", "F", "C"], "Chorus": ["G", "F", "C"], "Bridge": null } },
-    { id: 101, title: "Superstition", artist: "Stevie Wonder", genre: "R&B / Soul", chords: { "Verse": ["Ebm7", "Ab7", "Db7", "Gb7"], "Chorus": ["Ebm7", "Ab7", "Db7", "Gb7"], "Bridge": null } },
-    { id: 102, title: "Let's Stay Together", artist: "Al Green", genre: "R&B / Soul", chords: { "Verse": ["F", "Gm", "Bb", "C"], "Chorus": ["F", "Am", "Dm", "C"], "Bridge": null } },
-    { id: 103, title: "What's Going On", artist: "Marvin Gaye", genre: "R&B / Soul", chords: { "Verse": ["Emaj7", "F#m7", "G#m7", "Amaj7"], "Chorus": ["Emaj7", "F#m7", "G#m7", "Amaj7"], "Bridge": null } },
-    { id: 104, title: "I Say a Little Prayer", artist: "Aretha Franklin", genre: "R&B / Soul", chords: { "Verse": ["F#m", "B", "E", "A"], "Chorus": ["D", "C#m", "F#m", "B"], "Bridge": ["G", "A", "D"] } },
-    { id: 105, title: "No One", artist: "Alicia Keys", genre: "R&B / Soul", chords: { "Verse": ["E", "B", "C#m", "A"], "Chorus": ["E", "B", "C#m", "A"], "Bridge": null } },
-    { id: 106, title: "Fallin'", artist: "Alicia Keys", genre: "R&B / Soul", chords: { "Verse": ["Em", "B7", "Em", "B7"], "Chorus": ["Am", "Em", "B7"], "Bridge": null } },
-    { id: 107, title: "I'll Be There", artist: "The Jackson 5", genre: "R&B / Soul", chords: { "Verse": ["F", "C/E", "Dm", "C"], "Chorus": ["Bb", "F/A", "Gm", "C7"], "Bridge": ["Db", "Ab/C", "Bbm"] } },
-    { id: 108, title: "Killing Me Softly", artist: "Fugees / Roberta Flack", genre: "R&B / Soul", chords: { "Verse": ["Am", "Dm", "G", "C"], "Chorus": ["F", "C", "G", "Am"], "Bridge": null } },
-    { id: 109, title: "Ordinary People", artist: "John Legend", genre: "R&B / Soul", chords: { "Verse": ["C#m", "G#m", "A", "E"], "Chorus": ["F#m", "B", "E", "A"], "Bridge": ["D", "A", "E"] } },
-    { id: 110, title: "Ain't No Mountain High Enough", artist: "Marvin Gaye & Tammi Terrell", genre: "R&B / Soul", chords: { "Verse": ["G", "C", "D", "Em"], "Chorus": ["G", "D", "C", "G"], "Bridge": ["Am", "D", "G", "C"] } },
+        // R&B / SOUL (Existing examples)
+        { id: 19, title: "Stand by Me", artist: "Ben E. King", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Verse": ["G", "Em", "C", "D"] } },
+        { id: 46, title: "Ain't No Sunshine", artist: "Bill Withers", genre: "R&B / Soul", chords: { "Verse": ["Am", "Em", "G"] } },
+        { id: 47, title: "If I Ain't Got You", artist: "Alicia Keys", genre: "R&B / Soul", chords: { "Verse": ["G", "Em7", "Am7", "D7"] } },
+        { id: 100, title: "Respect", artist: "Aretha Franklin", genre: "R&B / Soul", chords: { "Verse": ["G", "F", "C"] } },
+        { id: 101, title: "Superstition", artist: "Stevie Wonder", genre: "R&B / Soul", chords: { "Verse": ["Ebm7", "Ab7"] } },
 
-    // SOUNDTRACK SONGS
-    { id: 29, title: "What a Wonderful World", artist: "Louis Armstrong (Soundtrack)", genre: "Soundtrack", chords: { "Verse": ["F", "Am", "Bb", "Am", "Gm7", "F", "A7", "Dm"], "Bridge": ["C", "F", "C", "F"] } },
-    { id: 33, title: "Let It Go", artist: "Idina Menzel (from Frozen)", genre: "Soundtrack", chords: { "Verse": ["Em", "C", "G", "D"], "Chorus": ["G", "D", "Em", "C"], "Bridge": ["C", "D", "Em", "C"] } },
-    { id: 50, title: "My Heart Will Go On", artist: "Celine Dion (from Titanic)", genre: "Soundtrack", chords: { "Verse": ["E", "B", "A", "E", "B"], "Chorus": ["C#m", "B", "A", "B"], "Bridge": ["A", "E", "B", "C#m", "B"] } },
-    { id: 51, title: "City of Stars", artist: "From La La Land", genre: "Soundtrack", chords: { "Verse": ["Am", "Dm7", "G7", "Cmaj7"], "Chorus": ["Fmaj7", "Em7", "A7", "Dm7"], "Bridge": null } },
-    { id: 52, title: "Shallow", artist: "Lady Gaga & Bradley Cooper", genre: "Soundtrack", chords: { "Verse": ["Em", "D", "G", "C"], "Chorus": ["Am", "G", "D", "Em"], "Bridge": ["Bm", "D", "G", "C"] } },
-    { id: 53, title: "A Million Dreams", artist: "From The Greatest Showman", genre: "Soundtrack", chords: { "Verse": ["G", "C", "Em", "D"], "Chorus": ["C", "G", "D", "G"], "Bridge": ["Am", "Em", "D"] } },
-    { id: 111, title: "Hedwig's Theme", artist: "John Williams (from Harry Potter)", genre: "Soundtrack", chords: { "Verse": ["Em", "Am", "B7", "Em"], "Chorus": ["C", "G", "Am", "B7"], "Bridge": ["D", "G", "C", "Am"] } },
-    { id: 112, title: "Over the Rainbow", artist: "Judy Garland (from The Wizard of Oz)", genre: "Soundtrack", chords: { "Verse": ["C", "Em", "F", "C"], "Chorus": ["G", "Am", "E7", "F"], "Bridge": ["G7", "C", "F"] } },
-    { id: 113, title: "The Sound of Silence", artist: "Simon & Garfunkel (The Graduate)", genre: "Soundtrack", chords: { "Verse": ["Am", "G", "C", "F"], "Chorus": ["C", "F", "C", "G", "Am"], "Bridge": null } },
-    { id: 114, title: "A Whole New World", artist: "From Aladdin", genre: "Soundtrack", chords: { "Verse": ["D", "G", "A", "Bm"], "Chorus": ["G", "D", "A", "D"], "Bridge": ["F#", "Bm", "E", "A"] } },
-    { id: 115, title: "Can You Feel the Love Tonight", artist: "Elton John (from The Lion King)", genre: "Soundtrack", chords: { "Verse": ["Bb", "F", "Gm", "Eb"], "Chorus": ["Bb", "Eb", "F", "Bb"], "Bridge": ["Cm", "Gm", "Eb", "F"] } },
-    { id: 116, title: "Unchained Melody", artist: "The Righteous Brothers (from Ghost)", genre: "Soundtrack", chords: { "Verse": ["C", "Am", "F", "G"], "Chorus": ["C", "G", "Am", "Em", "F"], "Bridge": null } },
-    { id: 117, title: "I Will Always Love You", artist: "Whitney Houston (The Bodyguard)", genre: "Soundtrack", chords: { "Verse": ["A", "F#m", "D", "E"], "Chorus": ["A", "E", "F#m", "D"], "Bridge": ["B", "E"] } },
-    { id: 118, title: "How Far I'll Go", artist: "From Moana", genre: "Soundtrack", chords: { "Verse": ["G", "C", "Em", "D"], "Chorus": ["G", "D", "C", "G"], "Bridge": ["Am", "C", "G", "D"] } },
-    { id: 119, title: "Beauty and the Beast", artist: "From Beauty and the Beast", genre: "Soundtrack", chords: { "Verse": ["F", "Am", "Bb", "C"], "Chorus": ["F", "Dm", "Gm", "C7"], "Bridge": ["Db", "Ab", "Gb", "F"] } },
-    { id: 120, title: "Moon River", artist: "Audrey Hepburn (Breakfast at Tiffany's)", genre: "Soundtrack", chords: { "Verse": ["C", "Am", "F", "C"], "Chorus": ["Em", "A7", "Dm", "G7"], "Bridge": ["F", "Em", "A7", "Dm"] } },
-    { id: 121, title: "You've Got a Friend in Me", artist: "Randy Newman (from Toy Story)", genre: "Soundtrack", chords: { "Verse": ["C", "G7", "C", "E7", "Am"], "Chorus": ["F", "C", "G7", "C"], "Bridge": ["E", "Am", "D7", "G7"] } },
-    { id: 122, title: "Concerning Hobbits", artist: "Howard Shore (Lord of the Rings)", genre: "Soundtrack", chords: { "Verse": ["D", "G", "A"], "Chorus": ["D", "A", "G", "D"], "Bridge": ["Bm", "G", "D", "A"] } },
-    { id: 123, title: "Married Life", artist: "Michael Giacchino (from Up)", genre: "Soundtrack", chords: { "Verse": ["F", "Bb", "C7", "F"], "Chorus": ["Gm", "C7", "F", "Dm"], "Bridge": ["A", "Dm", "G7", "C7"] } },
-    { id: 124, title: "Remember Me", artist: "From Coco", genre: "Soundtrack", chords: { "Verse": ["G", "D7", "G", "C"], "Chorus": ["G7", "C", "G", "D7"], "Bridge": ["Cm", "G", "A7", "D7"] } },
-
-    // HINDI SONGS
-    { id: 125, title: "Kal Ho Naa Ho", artist: "Sonu Nigam", genre: "Hindi Songs", chords: { "Verse": ["C", "G", "Am", "F"], "Chorus": ["C", "G", "F", "C"], "Bridge": ["Dm", "G", "C"] } },
-    { id: 126, title: "Tujhe Dekha Toh", artist: "Lata Mangeshkar, Kumar Sanu", genre: "Hindi Songs", chords: { "Verse": ["G", "C", "D", "G"], "Chorus": ["G", "Em", "C", "D"], "Bridge": ["C", "D", "G"] } },
-    { id: 127, title: "Pehla Nasha", artist: "Udit Narayan, Sadhana Sargam", genre: "Hindi Songs", chords: { "Verse": ["C", "G", "Am", "Em"], "Chorus": ["F", "C", "G", "C"] } },
-    { id: 128, title: "Chaiyya Chaiyya", artist: "Sukhwinder Singh, Sapna Awasthi", genre: "Hindi Songs", chords: { "Main": ["Am", "G", "F", "E"] } },
-    { id: 129, title: "Kabira", artist: "Rekha Bhardwaj, Tochi Raina", genre: "Hindi Songs", chords: { "Verse": ["Em", "C", "G", "D"], "Chorus": ["Em", "C", "G", "D"] } },
-    { id: 130, title: "Tum Hi Ho", artist: "Arijit Singh", genre: "Hindi Songs", chords: { "Verse": ["Em", "C", "G", "D"], "Chorus": ["Am", "Em", "C", "D"] } },
-    { id: 131, title: "Jeena Jeena", artist: "Atif Aslam", genre: "Hindi Songs", chords: { "Verse": ["G", "Em", "C", "D"], "Chorus": ["G", "D", "Em", "C"] } },
-    { id: 132, title: "Gulabi Aankhen", artist: "Mohammed Rafi", genre: "Hindi Songs", chords: { "Verse": ["Am", "G", "F", "E"], "Chorus": ["Am", "Dm", "G", "C"] } },
-    { id: 133, title: "Muskurane", artist: "Arijit Singh", genre: "Hindi Songs", chords: { "Verse": ["Am", "G", "C", "F"], "Chorus": ["Dm", "Am", "E", "Am"] } },
-    { id: 134, title: "Raabta", artist: "Arijit Singh, Shreya Ghoshal", genre: "Hindi Songs", chords: { "Verse": ["G", "D", "Em", "C"], "Chorus": ["G", "D", "C", "G"] } },
-    { id: 135, title: "Tera Ban Jaunga", artist: "Akhil Sachdeva, Tulsi Kumar", genre: "Hindi Songs", chords: { "Verse": ["C", "G", "Am", "F"], "Chorus": ["C", "G", "F", "G"] } },
-    { id: 136, title: "Ae Dil Hai Mushkil", artist: "Arijit Singh", genre: "Hindi Songs", chords: { "Verse": ["Am", "G", "F", "Em"], "Chorus": ["F", "G", "Em", "Am"] } },
-    { id: 137, title: "Senorita", artist: "Farhan Akhtar, Hrithik Roshan, Abhay Deol", genre: "Hindi Songs", chords: { "Verse": ["Am", "G", "C", "F"], "Chorus": ["Am", "G", "C", "E"] } },
-    { id: 138, title: "Pani Da Rang", artist: "Ayushmann Khurrana", genre: "Hindi Songs", chords: { "Verse": ["C", "Am", "F", "G"], "Chorus": ["C", "G", "Am", "F"] } },
-    { id: 139, title: "Mere Sapno Ki Rani", artist: "Kishore Kumar", genre: "Hindi Songs", chords: { "Verse": ["Am", "G", "C", "E"], "Chorus": ["Am", "Dm", "G", "C"] } },
-    { id: 140, title: "Iktara", artist: "Amit Trivedi, Kavita Seth", genre: "Hindi Songs", chords: { "Verse": ["C", "F", "C", "G"], "Chorus": ["Am", "F", "C", "G"] } },
-    { id: 141, title: "Moh Moh Ke Dhaage", artist: "Papon, Monali Thakur", genre: "Hindi Songs", chords: { "Verse": ["C", "G", "Am", "F"], "Chorus": ["F", "C", "G", "C"] } },
-    { id: 142, title: "Zara Sa", artist: "KK", genre: "Hindi Songs", chords: { "Verse": ["Em", "D", "C", "G"], "Chorus": ["Am", "Em", "D", "G"] } },
-    { id: 143, title: "Kahin To Hogi Woh", artist: "Rashid Ali, Vasundhara Das", genre: "Hindi Songs", chords: { "Verse": ["G", "Em", "C", "D"], "Chorus": ["G", "D", "C", "D"] } },
-    { id: 144, title: "Tum Mile", artist: "Neeraj Shridhar", genre: "Hindi Songs", chords: { "Verse": ["Am", "F", "C", "G"], "Chorus": ["Dm", "Am", "G", "C"] } }
+        // SOUNDTRACK (Existing examples)
+        { id: 29, title: "What a Wonderful World", artist: "Louis Armstrong", genre: "Soundtrack", chords: { "Verse": ["F", "Am", "Bb", "Am"] } },
+        { id: 33, title: "Let It Go", artist: "Idina Menzel (from Frozen)", genre: "Soundtrack", chords: { "Verse": ["Em", "C", "G", "D"] } },
+        { id: 50, title: "My Heart Will Go On", artist: "Celine Dion (from Titanic)", genre: "Soundtrack", chords: { "Verse": ["E", "B", "A", "E"] } },
+        { id: 52, title: "Shallow", artist: "Lady Gaga & Bradley Cooper (A Star Is Born)", genre: "Soundtrack", chords: { "Verse": ["Em", "D", "G", "C"] } },
+        { id: 112, title: "Over the Rainbow", artist: "Judy Garland (from The Wizard of Oz)", genre: "Soundtrack", chords: { "Verse": ["C", "Em", "F", "C"] } },
+        { id: 121, title: "You've Got a Friend in Me", artist: "Randy Newman (from Toy Story)", genre: "Soundtrack", chords: { "Verse": ["C", "G7", "C", "E7", "Am"] } },
+        
+        // HINDI SONGS (Existing examples)
+        { id: 125, title: "Kal Ho Naa Ho", artist: "Sonu Nigam", genre: "Hindi Songs", chords: { "Verse": ["C", "G", "Am", "F"] } },
+        { id: 126, title: "Tujhe Dekha Toh", artist: "Lata Mangeshkar, Kumar Sanu", genre: "Hindi Songs", chords: { "Verse": ["G", "C", "D", "G"] } },
+        { id: 130, title: "Tum Hi Ho", artist: "Arijit Singh", genre: "Hindi Songs", chords: { "Verse": ["Em", "C", "G", "D"] } },
+        { id: 132, title: "Gulabi Aankhen", artist: "Mohammed Rafi", genre: "Hindi Songs", chords: { "Verse": ["Am", "G", "F", "E"] } },
+        { id: 138, title: "Pani Da Rang", artist: "Ayushmann Khurrana", genre: "Hindi Songs", chords: { "Verse": ["C", "Am", "F", "G"] } }
     ];
+
+    // Function to augment song data
+    function augmentSongData(currentSongs) {
+        const targetGenres = ['Pop', 'Classic Rock', 'Alternative & Indie', 'Grunge', 'R&B / Soul', 'Soundtrack', 'Hindi Songs'];
+        let augmentedSongs = [...currentSongs]; 
+        
+        let maxId = currentSongs.reduce((max, song) => Math.max(max, song.id), 0);
+
+        // List of popular songs to add (ensure these have distinct titles/artists from initialSongData if they are truly new)
+        // For these songs to have "real chords", you MUST add a "chords: { ... }" object to each entry.
+        // Otherwise, they will get generic chords.
+        const popularAdditions = {
+            "Pop": [
+                { title: "As It Was", artist: "Harry Styles" }, { title: "Levitating", artist: "Dua Lipa" },
+                { title: "Stay", artist: "The Kid LAROI, Justin Bieber" }, { title: "good 4 u", artist: "Olivia Rodrigo" },
+                { title: "Save Your Tears", artist: "The Weeknd" }, { title: "Peaches", artist: "Justin Bieber" },
+                { title: "Drivers License", artist: "Olivia Rodrigo"}, { title: "Montero (Call Me By Your Name)", artist: "Lil Nas X"},
+                { title: "Happier Than Ever", artist: "Billie Eilish"}, { title: "Anti-Hero", artist: "Taylor Swift"},
+                { title: "Flowers", artist: "Miley Cyrus"}, { title: "Kill Bill", artist: "SZA"},
+                { title: "Vampire", artist: "Olivia Rodrigo"}, { title: "Cruel Summer", artist: "Taylor Swift"},
+                { title: "Dance The Night", artist: "Dua Lipa"}, { title: "greedy", artist: "Tate McRae"},
+                { title: "Paint The Town Red", artist: "Doja Cat"}, { title: "Get Lucky", artist: "Daft Punk ft. Pharrell Williams"},
+                { title: "Uptown Funk", artist: "Mark Ronson ft. Bruno Mars"},
+                { title: "Sorry", artist: "Justin Bieber"}, { title: "Thinking Out Loud", artist: "Ed Sheeran"}, // Also in R&B list
+                { title: "Hello", artist: "Adele"}, { title: "Sugar", artist: "Maroon 5"},
+                { title: "Can't Stop the Feeling!", artist: "Justin Timberlake"}, { title: "Closer", artist: "The Chainsmokers ft. Halsey"}
+            ],
+            "Classic Rock": [
+                { title: "Livin' on a Prayer", artist: "Bon Jovi" }, { title: "Back in Black", artist: "AC/DC" },
+                { title: "Another Brick in the Wall", artist: "Pink Floyd" }, { title: "Like a Rolling Stone", artist: "Bob Dylan" },
+                { title: "Born to Run", artist: "Bruce Springsteen" }, { title: "Comfortably Numb", artist: "Pink Floyd" },
+                { title: "Purple Haze", artist: "Jimi Hendrix" }, { title: "Whole Lotta Love", artist: "Led Zeppelin" },
+                { title: "My Generation", artist: "The Who" }, { title: "(I Can't Get No) Satisfaction", artist: "The Rolling Stones" },
+                { title: "Don't Stop Believin'", artist: "Journey"}, { title: "Highway to Hell", artist: "AC/DC"},
+                { title: "Sweet Emotion", artist: "Aerosmith"}, { title: "Kashmir", artist: "Led Zeppelin"},
+                { title: "Free Bird", artist: "Lynyrd Skynyrd"}, { title: "Smoke on the Water", artist: "Deep Purple"},
+                { title: "Born to Be Wild", artist: "Steppenwolf"}, { title: "Light My Fire", artist: "The Doors"},
+                { title: "Gimme Shelter", artist: "The Rolling Stones"}, { title: "Baba O'Riley", artist: "The Who"},
+                { title: "Iron Man", artist: "Black Sabbath"}, { title: "Carry On Wayward Son", artist: "Kansas"}
+                // { title: "More Than A Feeling", artist: "Boston"} // Already in initialSongData
+            ],
+            "Alternative & Indie": [ 
+                { title: "Take Me to Church", artist: "Hozier" }, { title: "Do I Wanna Know?", artist: "Arctic Monkeys" },
+                { title: "Little Talks", artist: "Of Monsters and Men" }, { title: "Somebody That I Used to Know", artist: "Gotye ft. Kimbra" },
+                { title: "Sweater Weather", artist: "The Neighbourhood" }, 
+                { title: "Skinny Love", artist: "Bon Iver"}, { title: "The Suburbs", artist: "Arcade Fire"},
+                { title: "Lisztomania", artist: "Phoenix"}, { title: "Kids", artist: "MGMT"},
+                { title: "Losing My Religion", artist: "R.E.M."}, { title: "The Less I Know The Better", artist: "Tame Impala"},
+                { title: "Float On", artist: "Modest Mouse"}, { title: "Seven Nation Army", artist: "The White Stripes"},
+                { title: "Pumped Up Kicks", artist: "Foster The People"}, 
+                { title: "Ho Hey", artist: "The Lumineers"}, 
+                { title: "Feel Good Inc.", artist: "Gorillaz"}, { title: "Island in the Sun", artist: "Weezer"},
+                { title: "Last Nite", artist: "The Strokes"}, { title: "Stubborn Love", artist: "The Lumineers"} // Changed from "Hey Ho" for variety
+            ],
+            "Grunge": [ 
+                { title: "Heart-Shaped Box", artist: "Nirvana" }, { title: "Glycerine", artist: "Bush" },
+                { title: "Black", artist: "Pearl Jam" }, { title: "Outshined", artist: "Soundgarden" },
+                { title: "Them Bones", artist: "Alice in Chains" }, {title: "Vasoline", artist: "Stone Temple Pilots"},
+                {title: "Polly", artist: "Nirvana"}, {title: "Rusty Cage", artist: "Soundgarden"},
+                {title: "No Excuses", artist: "Alice in Chains"}, {title: "Far Behind", artist: "Candlebox"},
+                {title: "Jeremy", artist: "Pearl Jam"}, {title: "Would?", artist: "Alice in Chains"},
+                {title: "Hunger Strike", artist: "Temple of the Dog"}, {title: "Man in the Box", artist: "Alice in Chains"}, 
+                {title: "Even Flow", artist: "Pearl Jam"}, {title: "Come As You Are", artist: "Nirvana"}
+            ],
+            "R&B / Soul": [
+                // { title: "Thinking Out Loud", artist: "Ed Sheeran" }, // Already in Pop, can be here too if desired with R&B specific chords
+                { title: "Sexual Healing", artist: "Marvin Gaye" },
+                { title: "If You Don't Know Me by Now", artist: "Harold Melvin & The Blue Notes" },
+                { title: "Crazy in Love", artist: "Beyoncé ft. Jay-Z" }, { title: "Signed, Sealed, Delivered I'm Yours", artist: "Stevie Wonder"},
+                { title: "At Last", artist: "Etta James"}, { title: "A Change Is Gonna Come", artist: "Sam Cooke"},
+                { title: "I Got You (I Feel Good)", artist: "James Brown"},
+                { title: "No Scrubs", artist: "TLC"}, { title: "Doo Wop (That Thing)", artist: "Lauryn Hill"},
+                { title: "Leave The Door Open", artist: "Silk Sonic"}, { title: "Waterfalls", artist: "TLC"},
+                { title: "My Girl", artist: "The Temptations"}, { title: "Let's Get It On", artist: "Marvin Gaye"},
+                { title: "Sittin' On The Dock of the Bay", artist: "Otis Redding"}, 
+                { title: "I Heard It Through the Grapevine", artist: "Marvin Gaye"}
+            ],
+            "Soundtrack": [
+                { title: "Can't Stop the Feeling!", artist: "Justin Timberlake (Trolls)" }, { title: "Skyfall", artist: "Adele (James Bond)" },
+                { title: "Danger Zone", artist: "Kenny Loggins (Top Gun)" }, { title: "Lose Yourself", artist: "Eminem (8 Mile)" },
+                { title: "The Power of Love", artist: "Huey Lewis & The News (Back to the Future)"}, { title: "Footloose", artist: "Kenny Loggins (Footloose)"},
+                { title: "Gonna Fly Now", artist: "Bill Conti (Rocky)"}, { title: "Hakuna Matata", artist: "Various Artists (The Lion King)"},
+                { title: "Stayin' Alive", artist: "Bee Gees (Saturday Night Fever)"}, { title: "Time of My Life", artist: "Bill Medley, Jennifer Warnes (Dirty Dancing)"},
+                { title: "Part of Your World", artist: "Jodi Benson (The Little Mermaid)"}, { title: "Circle of Life", artist: "Elton John (The Lion King)"},
+                { title: "Theme from Jurassic Park", artist: "John Williams"}, { title: "Star Wars Main Theme", artist: "John Williams"},
+                { title: "Defying Gravity", artist: "Idina Menzel, Kristin Chenoweth (Wicked)"}
+                // { title: "Bohemian Rhapsody (Film Version)", artist: "Rami Malek (Bohemian Rhapsody)"} // Covered by Queen original
+            ],
+            "Hindi Songs": [ 
+                { title: "Kesariya", artist: "Arijit Singh (Brahmastra)" }, { title: "Channa Mereya", artist: "Arijit Singh (Ae Dil Hai Mushkil)" },
+                { title: "Tum Sath Ho", artist: "Arijit Singh, Alka Yagnik (Tamasha)" }, { title: "Lag Jaa Gale", artist: "Lata Mangeshkar (Woh Kaun Thi?)" },
+                { title: "Chura Liya Hai Tumne Jo Dil Ko", artist: "Asha Bhosle, Mohammed Rafi (Yaadon Ki Baaraat)" }, 
+                { title: "Tere Bina Zindagi Se", artist: "Lata Mangeshkar, Kishore Kumar (Aandhi)"},
+                { title: "Yeh Dosti Hum Nahin Todenge", artist: "Kishore Kumar, Manna Dey (Sholay)"}, 
+                { title: "Papa Kehte Hain", artist: "Udit Narayan (Qayamat Se Qayamat Tak)"},
+                { title: "Tujh Mein Rab Dikhta Hai", artist: "Roop Kumar Rathod (Rab Ne Bana Di Jodi)"}, 
+                { title: "Dil Chahta Hai", artist: "Shankar Mahadevan (Dil Chahta Hai)"},
+                { title: "Maa Tujhe Salaam", artist: "A.R. Rahman"}, { title: "Jai Ho", artist: "A.R. Rahman, Sukhwinder Singh (Slumdog Millionaire)"},
+                { title: "Tera Zikr", artist: "Darshan Raval"}, { title: "Ghungroo", artist: "Arijit Singh, Shilpa Rao (War)"},
+                { title: "Apna Time Aayega", artist: "Ranveer Singh (Gully Boy)"}, { title: "Bekhayali", artist: "Sachet Tandon (Kabir Singh)"}
+            ]
+        };
+        
+        const genericChords = [
+            { "Verse": ["C", "G", "Am", "F"], "Chorus": ["F", "C", "G", "C"] },
+            { "Verse": ["G", "D", "Em", "C"], "Chorus": ["G", "D", "C", "G"] },
+            { "Verse": ["Am", "F", "C", "G"], "Chorus": ["F", "G", "C", "Am"] },
+            { "Main": ["D", "A", "Bm", "G"] } // Can be used if only one section is needed
+        ];
+        const difficulties = ["Beginner", "Intermediate", "Advanced"]; // For assigning random difficulties
+
+        targetGenres.forEach(genreName => {
+            if (popularAdditions[genreName]) {
+                for (const popularSong of popularAdditions[genreName]) {
+                    // Check if this popular song (by title and artist, and genre) already exists in augmentedSongs
+                    const songExists = augmentedSongs.some(s => 
+                        s.title.toLowerCase() === popularSong.title.toLowerCase() && 
+                        s.artist.toLowerCase() === popularSong.artist.toLowerCase() &&
+                        s.genre === genreName // Ensure genre matches as well
+                    );
+
+                    if (!songExists) {
+                        maxId++;
+                        augmentedSongs.push({
+                            id: maxId,
+                            title: popularSong.title,
+                            artist: popularSong.artist,
+                            genre: genreName, 
+                            // Use provided chords/difficulty if available in popularSong, else assign generic/random
+                            chords: popularSong.chords || genericChords[maxId % genericChords.length], 
+                            difficulty: popularSong.difficulty || difficulties[maxId % difficulties.length],
+                            bpm: popularSong.bpm // Will be undefined if not in popularSong object
+                        });
+                    }
+                }
+            }
+            // The loop that generated "Classic [Genre] Tune X" has been removed.
+        });
+        return augmentedSongs;
+    }
+
+    // Augment the initial data
+    const songData = augmentSongData(initialSongData);
 
     // DOM Elements
     const songGrid = document.getElementById('song-grid');
     const modal = document.getElementById('song-modal');
-    const modalContent = modal.querySelector('div');
+    // const modalContent = modal.querySelector('div > div'); // Not used directly, but good to know
     const closeModalBtn = document.getElementById('close-modal');
     const modalTitle = document.getElementById('modal-song-title');
     const modalArtist = document.getElementById('modal-song-artist');
+    const modalBpm = document.getElementById('modal-song-bpm');
     const modalChords = document.getElementById('modal-song-chords');
+    const modalFavoriteBtn = document.getElementById('modal-favorite-btn');
     const toggleDark = document.getElementById('toggle-dark');
     const searchBar = document.getElementById('search-bar');
+    const clearSearchBtn = document.getElementById('clear-search-btn');
     const filterContainer = document.getElementById('filter-container');
+    const difficultyFilterContainer = document.getElementById('difficulty-filter-container');
     const noResultsDiv = document.getElementById('no-results');
 
-    let currentFilter = 'All';
+    // Share buttons
+    const shareTwitterBtn = document.getElementById('share-twitter');
+    const shareFacebookBtn = document.getElementById('share-facebook');
+    const shareEmailBtn = document.getElementById('share-email');
+
+
+    let currentGenreFilter = 'All';
+    let currentDifficultyFilter = 'All';
+    let favorites = [];
+    let currentModalSongId = null;
+
+
+    // --- Favorite Logic ---
+    function loadFavorites() {
+        const storedFavorites = localStorage.getItem('pianoChordFavorites');
+        if (storedFavorites) {
+            favorites = JSON.parse(storedFavorites);
+        }
+    }
+
+    function saveFavorites() {
+        localStorage.setItem('pianoChordFavorites', JSON.stringify(favorites));
+    }
+
+    function isFavorite(songId) {
+        return favorites.includes(songId);
+    }
+
+    function toggleFavorite(songId, buttonElement) {
+        const songIndex = favorites.indexOf(songId);
+        if (songIndex > -1) {
+            favorites.splice(songIndex, 1); 
+        } else {
+            favorites.push(songId); 
+        }
+        saveFavorites();
+        updateFavoriteButtonState(buttonElement, songId); // Update button that was clicked
+        // If the modal's favorite button is for the same song, update it too
+        if (modalFavoriteBtn.dataset.songId == songId) { 
+             updateFavoriteButtonState(modalFavoriteBtn, songId);
+        }
+        // If viewing favorites, refresh the list. Otherwise, update the card in the grid.
+        if (currentGenreFilter === 'My Favorites') {
+            populateSongs();
+        } else {
+            const cardFavoriteButton = songGrid.querySelector(`.favorite-btn-card[data-song-id="${songId}"]`);
+            if (cardFavoriteButton && cardFavoriteButton !== buttonElement) { // Ensure not re-updating the same button if it's a card button
+                 updateFavoriteButtonState(cardFavoriteButton, songId);
+            }
+        }
+    }
+    
+    function updateFavoriteButtonState(buttonElement, songId) {
+        if (!buttonElement) return;
+        const heartIcon = buttonElement.querySelector('svg'); // Get the SVG icon
+        if (isFavorite(songId)) {
+            buttonElement.classList.add('favorited');
+            buttonElement.title = "Remove from Favorites";
+            if (heartIcon) heartIcon.setAttribute('fill', '#ef4444'); // Tailwind red-500
+        } else {
+            buttonElement.classList.remove('favorited');
+            buttonElement.title = "Add to Favorites";
+            if (heartIcon) heartIcon.setAttribute('fill', 'none');
+        }
+    }
+
 
     // --- Song and Filter Logic ---
 
-    function createFilterButtons() {
-      const genres = ['All', 'Pop', 'Classic Rock', 'Alternative & Indie', 'Grunge', 'R&B / Soul', 'Soundtrack', 'Hindi Songs']; // Added "Hindi Songs"
-      filterContainer.innerHTML = ''; // Clear existing buttons
+    function createGenreFilterButtons() {
+      const genres = ['All', 'My Favorites', 'Pop', 'Classic Rock', 'Alternative & Indie', 'Grunge', 'R&B / Soul', 'Soundtrack', 'Hindi Songs'];
+      filterContainer.innerHTML = ''; 
       genres.forEach(genre => {
         const btn = document.createElement('button');
         btn.textContent = genre;
         btn.className = `filter-btn px-3 py-2 sm:px-4 rounded-md border text-xs sm:text-sm font-semibold transition-colors duration-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700`;
-        if (genre === 'All') {
+        if (genre === currentGenreFilter) {
           btn.classList.add('filter-btn-active');
         }
         btn.addEventListener('click', () => {
-          currentFilter = genre;
-          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('filter-btn-active'));
+          currentGenreFilter = genre;
+          document.querySelectorAll('#filter-container .filter-btn').forEach(b => b.classList.remove('filter-btn-active'));
           btn.classList.add('filter-btn-active');
           populateSongs();
         });
@@ -308,44 +459,104 @@
       });
     }
 
+    function createDifficultyFilterButtons() {
+        const difficulties = ['All', 'Beginner', 'Intermediate', 'Advanced']; 
+        difficultyFilterContainer.innerHTML = '';
+        difficulties.forEach(difficulty => {
+            const btn = document.createElement('button');
+            btn.textContent = difficulty;
+            btn.className = `filter-btn px-3 py-2 sm:px-4 rounded-md border text-xs sm:text-sm font-semibold transition-colors duration-200 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700`;
+            if (difficulty === currentDifficultyFilter) {
+               btn.classList.add('filter-btn-active');
+            }
+            btn.addEventListener('click', () => {
+                currentDifficultyFilter = difficulty;
+                document.querySelectorAll('#difficulty-filter-container .filter-btn').forEach(b => b.classList.remove('filter-btn-active'));
+                btn.classList.add('filter-btn-active');
+                populateSongs();
+            });
+            difficultyFilterContainer.appendChild(btn);
+        });
+    }
+    
+    function getDifficultyBadgeColor(difficulty) {
+        switch (difficulty?.toLowerCase()) {
+            case 'beginner': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+            case 'intermediate': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+            case 'advanced': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+            default: return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+        }
+    }
+
+
     function populateSongs() {
       const searchTerm = searchBar.value.toLowerCase();
       songGrid.innerHTML = '';
 
-      const filteredSongs = songData.filter(song => {
-        const matchesSearch = song.title.toLowerCase().includes(searchTerm) ||
-                              song.artist.toLowerCase().includes(searchTerm);
-        const matchesFilter = currentFilter === 'All' || song.genre === currentFilter;
-        return matchesSearch && matchesFilter;
-      });
+      let songsToDisplay = [...songData]; // Use a copy to avoid modifying original songData array due to sort
+
+      if (currentGenreFilter === 'My Favorites') {
+          songsToDisplay = songsToDisplay.filter(song => isFavorite(song.id));
+      } else if (currentGenreFilter !== 'All') {
+          songsToDisplay = songsToDisplay.filter(song => song.genre === currentGenreFilter);
+      }
+
+      if (currentDifficultyFilter !== 'All') {
+          songsToDisplay = songsToDisplay.filter(song => song.difficulty === currentDifficultyFilter);
+      }
       
-      if (filteredSongs.length === 0) {
+      if (searchTerm) {
+          songsToDisplay = songsToDisplay.filter(song => 
+              song.title.toLowerCase().includes(searchTerm) ||
+              song.artist.toLowerCase().includes(searchTerm)
+          );
+      }
+      
+      if (songsToDisplay.length === 0) {
         noResultsDiv.classList.remove('hidden');
       } else {
         noResultsDiv.classList.add('hidden');
       }
 
-      // Sort songs alphabetically by title within the filtered group
-      filteredSongs.sort((a, b) => a.title.localeCompare(b.title));
+      songsToDisplay.sort((a, b) => a.title.localeCompare(b.title));
 
-      filteredSongs.forEach(song => {
-        const btn = document.createElement('button');
-        btn.setAttribute('type', 'button');
-        btn.className = `
+      songsToDisplay.forEach(song => {
+        const card = document.createElement('div');
+        card.className = `
           bg-light-surface dark:bg-dark-surface
-          text-light-text dark:text-dark-text
           rounded-xl shadow-md border border-gray-200 dark:border-gray-700
-          p-5 flex flex-col justify-center items-center gap-1 text-center
+          p-5 flex flex-col 
           transition-all duration-300 ease-in-out
-          hover:scale-105 hover:shadow-xl hover:border-indigo-500
-          focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50
+          hover:shadow-xl hover:border-indigo-500 dark:hover:border-indigo-600 relative group h-40 
+        `; // Added dark:hover:border-indigo-600 for dark mode consistency
+        
+        const difficultyBadge = song.difficulty ? `<span class="absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full ${getDifficultyBadgeColor(song.difficulty)}">${song.difficulty}</span>` : '<span class="absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">N/A</span>';
+        
+        const favoriteButtonHTML = `
+            <button class="favorite-btn favorite-btn-card absolute top-2 right-2 p-1.5 rounded-full hover:bg-light-highlight dark:hover:bg-dark-highlight transition-colors z-10" data-song-id="${song.id}" title="${isFavorite(song.id) ? 'Remove from Favorites' : 'Add to Favorites'}">
+                <svg class="w-5 h-5 text-gray-400 group-hover:text-red-500" fill="${isFavorite(song.id) ? '#ef4444' : 'none'}" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+            </button>
         `;
-        btn.innerHTML = `
-          <h3 class="text-lg font-bold tracking-tight">${song.title}</h3>
-          <p class="text-light-subtle dark:text-dark-subtle text-sm">${song.artist}</p>
+
+        card.innerHTML = `
+          ${difficultyBadge}
+          ${favoriteButtonHTML}
+          <button type="button" class="w-full text-left focus:outline-none mt-4 flex-grow flex flex-col justify-center items-start"> 
+            <h3 class="text-lg font-bold tracking-tight text-light-text dark:text-dark-text group-hover:text-indigo-600 dark:group-hover:text-indigo-400">${song.title}</h3>
+            <p class="text-light-subtle dark:text-dark-subtle text-sm">${song.artist}</p>
+          </button>
         `;
-        btn.addEventListener('click', () => openModal(song.id));
-        songGrid.appendChild(btn);
+        
+        card.querySelector('button[type="button"]').addEventListener('click', () => openModal(song.id));
+        
+        const favBtn = card.querySelector('.favorite-btn-card');
+        updateFavoriteButtonState(favBtn, song.id); 
+        favBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            toggleFavorite(song.id, favBtn);
+        });
+
+        songGrid.appendChild(card);
       });
     }
 
@@ -355,54 +566,92 @@
       const song = songData.find(s => s.id === songId);
       if (!song) return;
 
+      currentModalSongId = song.id; 
+
       modalTitle.textContent = song.title;
       modalArtist.textContent = `By ${song.artist}`;
+      
+      if (song.bpm) {
+        modalBpm.textContent = `Tempo: ${song.bpm} BPM`;
+        modalBpm.classList.remove('hidden');
+      } else {
+        modalBpm.textContent = '';
+        modalBpm.classList.add('hidden');
+      }
+
+      modalFavoriteBtn.dataset.songId = song.id; 
+      updateFavoriteButtonState(modalFavoriteBtn, song.id);
+
+
       modalChords.innerHTML = '';
+      const sections = song.chords ? Object.keys(song.chords) : [];
+      
+      if (sections.length === 0) {
+        modalChords.innerHTML = `<p class="modal-placeholder">No chords available for this song yet.</p>`;
+      } else {
+        sections.forEach(section => {
+            const chords = song.chords[section];
+            if (!chords || chords.length === 0) return;
 
-      const sections = Object.keys(song.chords);
+            const sectionBlock = document.createElement('div');
+            sectionBlock.className = 'mb-6';
 
-      sections.forEach(section => {
-        const chords = song.chords[section];
-        
-        if (!chords || chords.length === 0) {
-            return; 
-        }
+            const sectionTitleEl = document.createElement('h4');
+            sectionTitleEl.className = 'text-xl font-semibold mb-3 border-b border-gray-200 dark:border-gray-600 pb-2 capitalize'; // Added capitalize
+            sectionTitleEl.textContent = section;
+            sectionBlock.appendChild(sectionTitleEl);
 
-        const sectionBlock = document.createElement('div');
-        sectionBlock.className = 'mb-6';
+            const chordWrap = document.createElement('div');
+            chordWrap.className = 'flex flex-wrap gap-x-3 gap-y-4';
 
-        const sectionTitle = document.createElement('h4');
-        sectionTitle.className = 'text-xl font-semibold mb-3 border-b border-gray-200 dark:border-gray-600 pb-2';
-        sectionTitle.textContent = section; // e.g., "Verse", "Chorus", "Main"
+            chords.forEach(chord => {
+            const chordItem = document.createElement('div');
+            chordItem.className = 'flex flex-col items-center'; 
 
-        const chordWrap = document.createElement('div');
-        chordWrap.className = 'flex flex-wrap gap-3';
-
-        chords.forEach(chord => {
-          const span = document.createElement('span');
-          span.className = `
-            inline-flex items-center gap-2 px-4 py-2
-            bg-indigo-100 dark:bg-indigo-900
-            text-indigo-800 dark:text-indigo-100
-            rounded-full font-medium text-sm shadow-sm
-            transform hover:scale-110 transition-transform
-          `;
-          span.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path></svg> ${chord}`;
-          chordWrap.appendChild(span);
+            const span = document.createElement('span');
+            span.className = `
+                inline-flex items-center gap-2 px-4 py-2
+                bg-indigo-100 dark:bg-indigo-900
+                text-indigo-800 dark:text-indigo-100
+                rounded-full font-medium text-sm shadow-sm
+                transform hover:scale-110 transition-transform
+            `;
+            span.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path></svg> ${chord}`;
+            chordItem.appendChild(span);
+            
+            chordWrap.appendChild(chordItem);
+            });
+            
+            sectionBlock.appendChild(chordWrap);
+            modalChords.appendChild(sectionBlock);
         });
-        
-        sectionBlock.appendChild(sectionTitle);
-        sectionBlock.appendChild(chordWrap);
-        modalChords.appendChild(sectionBlock);
-      });
+      }
+
+
+      const shareUrl = window.location.href.split('?')[0] + `?songId=${song.id}`; // Basic deeplinking idea
+      const shareText = `Check out the chords for ${song.title} by ${song.artist} on Piano Chord Finder!`;
+
+      shareTwitterBtn.onclick = () => {
+          window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+      };
+      shareFacebookBtn.onclick = () => {
+          window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`, '_blank');
+      };
+      shareEmailBtn.onclick = () => {
+          window.location.href = `mailto:?subject=${encodeURIComponent(song.title + ' - Piano Chords')}&body=${encodeURIComponent(shareText + '\n' + shareUrl)}`;
+      };
+
 
       modal.classList.remove('opacity-0', 'pointer-events-none');
-      modalContent.classList.remove('scale-95');
+      modal.querySelector('div > div').classList.remove('scale-95'); 
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
     }
 
     function closeModal() {
       modal.classList.add('opacity-0', 'pointer-events-none');
-      modalContent.classList.add('scale-95');
+      modal.querySelector('div > div').classList.add('scale-95'); 
+      currentModalSongId = null;
+      document.body.style.overflow = ''; // Restore background scrolling
     }
 
     // --- Event Listeners & Initialization ---
@@ -412,20 +661,51 @@
       if (e.target === modal) closeModal();
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
+      if (e.key === 'Escape' && !modal.classList.contains('pointer-events-none')) closeModal(); // Only close if modal is open
     });
 
     toggleDark.addEventListener('click', () => {
       document.documentElement.classList.toggle('dark');
+      localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
     });
 
-    searchBar.addEventListener('input', populateSongs);
+    searchBar.addEventListener('input', () => {
+        populateSongs();
+        clearSearchBtn.classList.toggle('hidden', searchBar.value === '');
+    });
+
+    clearSearchBtn.addEventListener('click', () => {
+        searchBar.value = '';
+        clearSearchBtn.classList.add('hidden');
+        populateSongs();
+        searchBar.focus();
+    });
+
+    modalFavoriteBtn.addEventListener('click', () => {
+        if (currentModalSongId !== null) {
+            toggleFavorite(currentModalSongId, modalFavoriteBtn);
+            // The card button will be updated by the toggleFavorite function if not viewing "My Favorites"
+        }
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Small fix: Ensure Creep (STP) and Creep (Radiohead) have unique IDs if they didn't before.
-        // Upon review, song IDs are unique. The title was changed for clarity, which is good.
-        createFilterButtons();
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+        loadFavorites();
+        createGenreFilterButtons();
+        createDifficultyFilterButtons();
         populateSongs();
+
+        // Bonus: Check for URL parameters to auto-open a song
+        const urlParams = new URLSearchParams(window.location.search);
+        const songIdToOpen = urlParams.get('songId');
+        if (songIdToOpen) {
+            const songToOpen = songData.find(s => s.id == parseInt(songIdToOpen));
+            if (songToOpen) {
+                openModal(songToOpen.id);
+            }
+        }
     });
   </script>
 </body>
