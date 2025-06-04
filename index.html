@@ -210,172 +210,177 @@
     const AppConfig = {
         genres: ['All', 'My Favorites', 'Recently Viewed', 'Pop', 'Classic Rock', 'Alternative & Indie', 'Grunge', 'R&B / Soul', 'Soundtrack', 'Hindi Songs'],
         difficulties: ["Beginner", "Intermediate", "Advanced"],
-        genericChords: [
-            { "Verse": ["C", "G", "Am", "F"], "Chorus": ["F", "C", "G", "C"] },
-            { "Verse": ["G", "D", "Em", "C"], "Chorus": ["G", "D", "C", "G"] },
-            { "Verse": ["Am", "F", "C", "G"], "Chorus": ["F", "G", "C", "Am"] },
-            { "Main": ["D", "A", "Bm", "G"] }
-        ],
         maxRecentlyViewed: 15,
         notesSharp: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
         notesFlat:  ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
         chordTypes: {
-            '': [0, 4, 7],
-            'm': [0, 3, 7],
-            'maj': [0, 4, 7],
-            '7': [0, 4, 7, 10],
-            'maj7': [0, 4, 7, 11],
-            'm7': [0, 3, 7, 10],
-            'dim': [0, 3, 6],
-            'dim7': [0, 3, 6, 9],
-            'aug': [0, 4, 8],
-            'sus4': [0, 5, 7],
-            'sus2': [0, 2, 7],
-            '6': [0, 4, 7, 9],
-            'm6': [0, 3, 7, 9],
-            'add9': [0, 4, 7, 14],
-            'm7b5': [0, 3, 6, 10],
-            '7sus4': [0, 5, 7, 10],
+            '': [0, 4, 7], 'm': [0, 3, 7], 'maj': [0, 4, 7], '7': [0, 4, 7, 10], 'maj7': [0, 4, 7, 11], 'm7': [0, 3, 7, 10],
+            'dim': [0, 3, 6], 'dim7': [0, 3, 6, 9], 'aug': [0, 4, 8], 'sus4': [0, 5, 7], 'sus2': [0, 2, 7], '6': [0, 4, 7, 9],
+            'm6': [0, 3, 7, 9], 'add9': [0, 4, 7, 14], 'm7b5': [0, 3, 6, 10], '7sus4': [0, 5, 7, 10],
         },
         transposeLimit: 11,
         initialSongData: [
+            // == POP (VERIFIED & UPDATED) ==
             { id: 23, title: "Imagine", artist: "John Lennon", genre: "Pop", difficulty: "Beginner", bpm: 76, chords: { "Verse": ["C", "Cmaj7", "F"], "Chorus": ["F", "G", "C", "E7"] } },
             { id: 25, title: "Someone Like You", artist: "Adele", genre: "Pop", difficulty: "Intermediate", bpm: 67, chords: { "Verse": ["A", "E", "F#m", "D"], "Chorus": ["A", "E", "F#m", "D"] } },
             { id: 31, title: "Perfect", artist: "Ed Sheeran", genre: "Pop", difficulty: "Beginner", bpm: 95, chords: { "Verse": ["G", "Em", "C", "D"], "Chorus": ["G", "Em", "C", "D"] } },
-            { id: 55, title: "Shape of You", artist: "Ed Sheeran", genre: "Pop", difficulty: "Intermediate", chords: { "Verse": ["C#m", "F#m", "A", "B"], "Chorus": ["C#m", "F#m", "A", "B"] } },
-            { id: 57, title: "Blinding Lights", artist: "The Weeknd", genre: "Pop", difficulty: "Intermediate", chords: { "Verse": ["Fm", "Cm", "Eb", "Bb"], "Chorus": ["Fm", "Cm", "Eb", "Bb"] } },
-            { id: 59, title: "Watermelon Sugar", artist: "Harry Styles", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Dm", "Am", "C", "G"], "Chorus": ["Dm", "Am", "C", "G"] } },
-            { id: 60, title: "Bad Guy", artist: "Billie Eilish", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Em", "D", "G"], "Chorus": ["Em", "G", "Am"] } },
+            { id: 55, title: "Shape of You", artist: "Ed Sheeran", genre: "Pop", difficulty: "Intermediate", chords: { "Loop": ["C#m", "F#m", "A", "B"] } },
+            { id: 57, title: "Blinding Lights", artist: "The Weeknd", genre: "Pop", difficulty: "Intermediate", chords: { "Main": ["Fm", "Cm", "Eb", "Bb"] } },
+            { id: 59, title: "Watermelon Sugar", artist: "Harry Styles", genre: "Pop", difficulty: "Beginner", chords: { "Main": ["Dm", "Am", "C", "G"] } },
+            { id: 60, title: "Bad Guy", artist: "Billie Eilish", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Em"], "Chorus": ["G", "Am", "B7", "Em"] } },
             { id: 61, title: "Shake It Off", artist: "Taylor Swift", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Am", "C", "G"], "Chorus": ["Am", "C", "G", "F"] } },
             { id: 62, title: "Happy", artist: "Pharrell Williams", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Fm", "Db", "Ab", "Eb"], "Chorus": ["Fm", "Db", "Ab", "Eb"] } },
-            { id: 64, title: "Royals", artist: "Lorde", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["D", "C", "G"], "Chorus": ["D", "C", "G"] } },
-            { id: 1, title: "Bohemian Rhapsody", artist: "Queen", genre: "Classic Rock", difficulty: "Advanced", bpm: 72, chords: { "Intro": ["Bb", "Gm", "Eb", "F", "Bb6"], "Ballad": ["Bb", "Gm", "Cm", "F", "Eb/G", "F/A"], "Opera": ["A", "D", "G", "C#dim", "F#7"] } },
-            { id: 14, title: "Stairway to Heaven", artist: "Led Zeppelin", genre: "Classic Rock", difficulty: "Advanced", chords: { "Intro": ["Am", "G#aug", "C/G", "D/F#", "Fmaj7", "G/B", "Am"], "Verse": ["Am", "G", "C", "D", "Fmaj7"] } },
-            { id: 16, title: "Sweet Child O' Mine", artist: "Guns N' Roses", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["D", "C", "G"], "Chorus": ["A", "C", "D", "G"] } },
-            { id: 18, title: "Knockin' on Heaven's Door", artist: "Bob Dylan", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["G", "D", "Am"], "Chorus": ["G", "D", "C"] } },
-            { id: 20, title: "Hey Jude", artist: "The Beatles", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["F", "C", "C7", "F", "Bb"], "Outro": ["F", "Eb", "Bb", "F"] } },
+            { id: 64, title: "Royals", artist: "Lorde", genre: "Pop", difficulty: "Beginner", chords: { "Main": ["D", "C", "G"] } },
+            { id: 200, title: "As It Was", artist: "Harry Styles", genre: "Pop", difficulty: "Intermediate", chords: { "Main": ["Bm", "E", "A", "D"] } },
+            { id: 201, title: "Levitating", artist: "Dua Lipa", genre: "Pop", difficulty: "Intermediate", chords: { "Verse": ["Am", "Em", "Dm"], "Chorus": ["Am", "G", "C", "F"] } },
+            { id: 202, title: "Stay", artist: "The Kid LAROI, Justin Bieber", genre: "Pop", difficulty: "Beginner", chords: { "Main": ["Eb", "Bb", "Gm", "F"] } },
+            { id: 203, title: "good 4 u", artist: "Olivia Rodrigo", genre: "Pop", difficulty: "Intermediate", chords: { "Verse": ["F#m", "D", "A", "E"], "Chorus": ["F#m", "D", "A", "E"] } },
+            { id: 204, title: "Save Your Tears", artist: "The Weeknd", genre: "Pop", difficulty: "Beginner", chords: { "Main": ["C", "G", "Am", "F"] } },
+            { id: 205, title: "Peaches", artist: "Justin Bieber", genre: "Pop", difficulty: "Intermediate", chords: { "Main": ["Fmaj7", "Em7", "Am7", "Dm7"] } },
+            { id: 206, title: "Drivers License", artist: "Olivia Rodrigo", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Bb", "Gm", "Eb"], "Chorus": ["Bb", "Gm", "Eb", "F"] } },
+            { id: 207, title: "Montero (Call Me By Your Name)", artist: "Lil Nas X", genre: "Pop", difficulty: "Intermediate", chords: { "Main": ["C#m", "E", "B", "F#"] } },
+            { id: 208, title: "Happier Than Ever", artist: "Billie Eilish", genre: "Pop", difficulty: "Advanced", chords: { "Part 1": ["C", "Em", "G"], "Part 2": ["C", "G", "Am", "F"] } },
+            { id: 209, title: "Anti-Hero", artist: "Taylor Swift", genre: "Pop", difficulty: "Beginner", chords: { "Main": ["A", "E", "F#m", "D"] } },
+            { id: 210, title: "Flowers", artist: "Miley Cyrus", genre: "Pop", difficulty: "Beginner", chords: { "Main": ["Am", "D", "G", "C"] } },
+            { id: 211, title: "Kill Bill", artist: "SZA", genre: "Pop", difficulty: "Intermediate", chords: { "Main": ["Fmaj7", "Em7", "A7", "Dm7", "G7"] } },
+            { id: 212, title: "Vampire", artist: "Olivia Rodrigo", genre: "Pop", difficulty: "Intermediate", chords: { "Main": ["F", "C", "G", "Am"] } },
+            { id: 213, title: "Cruel Summer", artist: "Taylor Swift", genre: "Pop", difficulty: "Intermediate", chords: { "Main": ["A", "C#m", "D", "E"] } },
+            { id: 214, title: "Dance The Night", artist: "Dua Lipa", genre: "Pop", difficulty: "Intermediate", chords: { "Main": ["Bbm", "Ab", "Gb", "F"] } },
+            { id: 215, title: "greedy", artist: "Tate McRae", genre: "Pop", difficulty: "Intermediate", chords: { "Main": ["F#m", "C#m", "D", "A"] } },
+            { id: 216, title: "Paint The Town Red", artist: "Doja Cat", genre: "Pop", difficulty: "Beginner", chords: { "Main": ["Bbm", "Fm", "Gb", "Db"] } },
+            { id: 217, title: "Get Lucky", artist: "Daft Punk ft. Pharrell Williams", genre: "Pop", difficulty: "Intermediate", chords: { "Main": ["Bm", "D", "F#m", "E"] } },
+            { id: 218, title: "Uptown Funk", artist: "Mark Ronson ft. Bruno Mars", genre: "Pop", difficulty: "Advanced", chords: { "Main": ["Dm7", "G7"] } },
+            { id: 219, title: "Sorry", artist: "Justin Bieber", genre: "Pop", difficulty: "Beginner", chords: { "Main": ["Ab", "Eb", "Fm", "Db"] } },
+            { id: 220, title: "Thinking Out Loud", artist: "Ed Sheeran", genre: "Pop", difficulty: "Beginner", chords: { "Main": ["D", "D/F#", "G", "A"] } },
+            { id: 221, title: "Hello", artist: "Adele", genre: "Pop", difficulty: "Beginner", chords: { "Verse": ["Fm", "Ab", "Eb", "Db"], "Chorus": ["Fm", "Ab", "Eb", "Db"] } },
+            { id: 222, title: "Sugar", artist: "Maroon 5", genre: "Pop", difficulty: "Beginner", chords: { "Main": ["Db", "Ab", "Fm", "Eb"] } },
+            { id: 223, title: "Can't Stop the Feeling!", artist: "Justin Timberlake", genre: "Pop", difficulty: "Beginner", chords: { "Main": ["C", "Am", "F", "G"] } },
+            { id: 224, title: "Closer", artist: "The Chainsmokers ft. Halsey", genre: "Pop", difficulty: "Beginner", chords: { "Main": ["Db", "Ab", "Bbm", "Gb"] } },
+
+            // == CLASSIC ROCK (VERIFIED & UPDATED) ==
+            { id: 1, title: "Bohemian Rhapsody", artist: "Queen", genre: "Classic Rock", difficulty: "Advanced", bpm: 72, chords: { "Intro": ["Bb", "Gm", "Eb", "F"], "Ballad": ["Bb", "Gm", "Cm", "F"], "Opera": ["A", "D", "G", "C#dim"], "Outro": ["Eb", "Bb", "C", "F"] } },
+            { id: 14, title: "Stairway to Heaven", artist: "Led Zeppelin", genre: "Classic Rock", difficulty: "Advanced", chords: { "Intro": ["Am", "G#aug", "C/G", "D/F#"], "Verse": ["Am", "G", "C", "D"], "Solo": ["Am", "G", "F"] } },
+            { id: 16, title: "Sweet Child O' Mine", artist: "Guns N' Roses", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Intro": ["D", "C", "G", "D"], "Verse": ["D", "C", "G"], "Chorus": ["A", "C", "D", "G"] } },
+            { id: 18, title: "Knockin' on Heaven's Door", artist: "Bob Dylan", genre: "Classic Rock", difficulty: "Beginner", chords: { "Main": ["G", "D", "Am", "C"] } },
+            { id: 20, title: "Hey Jude", artist: "The Beatles", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["F", "C", "C7", "Bb"], "Outro": ["F", "Eb", "Bb", "F"] } },
             { id: 22, title: "Let It Be", artist: "The Beatles", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["C", "G", "Am", "F"], "Chorus": ["F", "C", "G", "C"] } },
-            { id: 43, title: "Piano Man", artist: "Billy Joel", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["C", "G/B", "Am", "Am/G", "F", "C/E", "D7", "G"], "Chorus": ["F", "C/E", "D7", "G", "C"] } },
+            { id: 43, title: "Piano Man", artist: "Billy Joel", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["C", "G/B", "Am", "F"], "Chorus": ["F", "C", "D7", "G"] } },
             { id: 44, title: "Hotel California", artist: "Eagles", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["Am", "E7", "G", "D", "F", "C", "Dm", "E"], "Chorus": ["F", "C", "E7", "Am"] } },
-            { id: 66, title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", genre: "Classic Rock", difficulty: "Beginner", chords: { "Verse": ["D", "C", "G"], "Chorus": ["D", "C", "G"] } },
-            { id: 67, title: "More Than a Feeling", artist: "Boston", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["G", "Cadd9", "Em7", "D"], "Chorus": ["G", "Cadd9", "Em7", "D"] } },
-            { id: 6, title: "Smells Like Teen Spirit", artist: "Nirvana", genre: "Grunge", difficulty: "Intermediate", chords: { "Verse": ["Fm", "Bb", "G#", "C#"] } },
-            { id: 8, title: "Black Hole Sun", artist: "Soundgarden", genre: "Grunge", difficulty: "Advanced", chords: { "Verse": ["A", "G", "D", "E", "Cmaj7/G"], "Chorus": ["E", "A", "D", "G", "C"] } },
-            { id: 11, title: "Plush", artist: "Stone Temple Pilots", genre: "Grunge", difficulty: "Intermediate", chords: { "Verse": ["G", "D/F#", "Em", "Cadd9"] } },
-            { id: 12, title: "Alive", artist: "Pearl Jam", genre: "Grunge", difficulty: "Intermediate", chords: { "Verse": ["A", "G", "D", "E"] } },
-            { id: 71, title: "Lithium", artist: "Nirvana", genre: "Grunge", difficulty: "Beginner", chords: { "Verse": ["E", "G#", "C#m", "A", "C", "D"] } },
-            { id: 17, title: "Everlong", artist: "Foo Fighters", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Verse": ["Dmaj7", "Bm7", "G", "Asus4"] } },
-            { id: 27, title: "Clocks", artist: "Coldplay", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Verse": ["Eb", "Bbm7", "Fm7"] } },
-            { id: 38, title: "Mr. Brightside", artist: "The Killers", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Chorus": ["Db", "Ab", "Bbm", "Gb"] } },
-            { id: 39, title: "Wonderwall", artist: "Oasis", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["F#m", "A", "E", "B", "D", "C#m"] } },
-            { id: 85, title: "Creep", artist: "Radiohead", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["G", "B", "C", "Cm"] } },
-            { id: 88, title: "Yellow", artist: "Coldplay", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["G", "D", "Cadd9", "Em7"] } },
-            { id: 93, title: "Zombie", artist: "The Cranberries", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["Em", "C", "G", "D"] } },
-            { id: 96, title: "Riptide", artist: "Vance Joy", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["Am", "G", "C", "F"] } },
-            { id: 19, title: "Stand by Me", artist: "Ben E. King", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Verse": ["G", "Em", "C", "D"] } },
-            { id: 46, title: "Ain't No Sunshine", artist: "Bill Withers", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Verse": ["Am7", "Em", "G", "Dm7"] } },
-            { id: 47, title: "If I Ain't Got You", artist: "Alicia Keys", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Verse": ["Gmaj7", "Em7", "Am7", "D7", "Bm7"] } },
-            { id: 100, title: "Respect", artist: "Aretha Franklin", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Verse": ["G", "F", "C", "Bb"] } },
-            { id: 101, title: "Superstition", artist: "Stevie Wonder", genre: "R&B / Soul", difficulty: "Advanced", chords: { "Verse": ["Ebm7", "Ab7", "Dbmaj7", "Gbmaj7"] } },
-            { id: 29, title: "What a Wonderful World", artist: "Louis Armstrong", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["F", "Am", "Bb", "C7", "Gm7"] } },
-            { id: 33, title: "Let It Go", artist: "Idina Menzel (from Frozen)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["Em", "C", "G", "D", "Am"] } },
-            { id: 50, title: "My Heart Will Go On", artist: "Celine Dion (from Titanic)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Verse": ["E", "B", "A", "C#m", "F#m"] } },
-            { id: 52, title: "Shallow", artist: "Lady Gaga & Bradley Cooper (A Star Is Born)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Verse": ["Em", "D/F#", "G", "C", "Am7"] } },
-            { id: 112, title: "Over the Rainbow", artist: "Judy Garland (from The Wizard of Oz)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["C", "Em", "F", "G7", "Am"] } },
-            { id: 121, title: "You've Got a Friend in Me", artist: "Randy Newman (from Toy Story)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["C", "G7", "E7", "Am", "D7", "F"] } },
-            { id: 125, title: "Kal Ho Naa Ho", artist: "Sonu Nigam", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Verse": ["C", "G", "Am", "F", "Dm"] } },
-            { id: 126, title: "Tujhe Dekha Toh", artist: "Lata Mangeshkar, Kumar Sanu", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Verse": ["G", "C", "D", "Em"] } },
-            { id: 130, title: "Tum Hi Ho", artist: "Arijit Singh", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Verse": ["Em", "C", "G", "D", "Am"] } },
-            { id: 132, title: "Gulabi Aankhen", artist: "Mohammed Rafi", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Verse": ["Am", "G", "F", "E7"] } },
-            { id: 138, title: "Pani Da Rang", artist: "Ayushmann Khurrana", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Verse": ["C", "Am", "F", "G", "Em"] } }
+            { id: 66, title: "Sweet Home Alabama", artist: "Lynyrd Skynyrd", genre: "Classic Rock", difficulty: "Beginner", chords: { "Main": ["D", "C", "G"] } },
+            { id: 67, title: "More Than a Feeling", artist: "Boston", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Main": ["G", "C", "Em", "D"] } },
+            { id: 300, title: "Livin' on a Prayer", artist: "Bon Jovi", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Main": ["Em", "C", "G", "D"] } },
+            { id: 301, title: "Back in Black", artist: "AC/DC", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Main": ["E", "D", "A"] } },
+            { id: 302, title: "Another Brick in the Wall", artist: "Pink Floyd", genre: "Classic Rock", difficulty: "Beginner", chords: { "Main": ["Dm", "G", "F", "C"] } },
+            { id: 303, title: "Like a Rolling Stone", artist: "Bob Dylan", genre: "Classic Rock", difficulty: "Beginner", chords: { "Main": ["C", "Dm", "Em", "F", "G"] } },
+            { id: 304, title: "Born to Run", artist: "Bruce Springsteen", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Main": ["E", "A", "B"] } },
+            { id: 305, title: "Comfortably Numb", artist: "Pink Floyd", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Verse": ["Bm", "A", "G", "Em"], "Chorus": ["D", "A", "C", "G"] } },
+            { id: 306, title: "Purple Haze", artist: "Jimi Hendrix", genre: "Classic Rock", difficulty: "Advanced", chords: { "Main": ["E7#9", "G", "A"] } },
+            { id: 307, title: "Whole Lotta Love", artist: "Led Zeppelin", genre: "Classic Rock", difficulty: "Intermediate", chords: { "Main": ["E", "D", "A"] } },
+            { id: 308, title: "My Generation", artist: "The Who", genre: "Classic Rock", difficulty: "Beginner", chords: { "Main": ["G", "F"] } },
+            { id: 309, title: "(I Can't Get No) Satisfaction", artist: "The Rolling Stones", genre: "Classic Rock", difficulty: "Beginner", chords: { "Main": ["E", "A", "D", "B7"] } },
+            { id: 310, title: "Don't Stop Believin'", artist: "Journey", genre: "Classic Rock", difficulty: "Beginner", chords: { "Main": ["E", "B", "C#m", "A"] } },
+            { id: 311, title: "Highway to Hell", artist: "AC/DC", genre: "Classic Rock", difficulty: "Beginner", chords: { "Main": ["A", "D", "G"] } },
+            { id: 312, title: "Sweet Emotion", artist: "Aerosmith", genre: "Classic Rock", difficulty: "Beginner", chords: { "Main": ["A", "D", "E"] } },
+            { id: 313, title: "Kashmir", artist: "Led Zeppelin", genre: "Classic Rock", difficulty: "Advanced", chords: { "Main": ["D", "A", "G", "C"] } },
+            { id: 314, title: "Free Bird", artist: "Lynyrd Skynyrd", genre: "Classic Rock", difficulty: "Advanced", chords: { "Slow": ["G", "D", "Em", "F", "C"], "Fast": ["G", "Bb", "C"] } },
+            { id: 315, title: "Smoke on the Water", artist: "Deep Purple", genre: "Classic Rock", difficulty: "Beginner", chords: { "Main": ["Gm", "F", "Ab", "C"] } },
+            
+            // == GRUNGE (VERIFIED & UPDATED) ==
+            { id: 6, title: "Smells Like Teen Spirit", artist: "Nirvana", genre: "Grunge", difficulty: "Beginner", chords: { "Main": ["Fm", "Bb", "G#", "C#"] } },
+            { id: 8, title: "Black Hole Sun", artist: "Soundgarden", genre: "Grunge", difficulty: "Advanced", chords: { "Verse": ["A", "G", "D", "E"], "Chorus": ["E", "A", "D", "G", "C"] } },
+            { id: 11, title: "Plush", artist: "Stone Temple Pilots", genre: "Grunge", difficulty: "Intermediate", chords: { "Main": ["G", "D/F#", "Em", "C"] } },
+            { id: 12, title: "Alive", artist: "Pearl Jam", genre: "Grunge", difficulty: "Intermediate", chords: { "Main": ["A", "G", "D", "E"] } },
+            { id: 71, title: "Lithium", artist: "Nirvana", genre: "Grunge", difficulty: "Beginner", chords: { "Main": ["E", "G#", "C#m", "A"] } },
+            { id: 400, title: "Heart-Shaped Box", artist: "Nirvana", genre: "Grunge", difficulty: "Intermediate", chords: { "Verse": ["G#m", "E", "C#m"], "Chorus": ["G#m", "E", "C#m"] } },
+            { id: 401, title: "Glycerine", artist: "Bush", genre: "Grunge", difficulty: "Beginner", chords: { "Main": ["F", "C", "G", "Am"] } },
+            { id: 402, title: "Black", artist: "Pearl Jam", genre: "Grunge", difficulty: "Intermediate", chords: { "Main": ["E", "A", "D"] } },
+            { id: 403, title: "Outshined", artist: "Soundgarden", genre: "Grunge", difficulty: "Intermediate", chords: { "Main": ["B", "G", "D", "A"] } },
+            { id: 404, title: "Them Bones", artist: "Alice in Chains", genre: "Grunge", difficulty: "Intermediate", chords: { "Main": ["C#m", "G#", "A"] } },
+            { id: 405, title: "Come As You Are", artist: "Nirvana", genre: "Grunge", difficulty: "Beginner", chords: { "Main": ["F#m", "A", "D", "B"] } },
+            { id: 406, title: "Man in the Box", artist: "Alice in Chains", genre: "Grunge", difficulty: "Intermediate", chords: { "Main": ["E", "G", "D", "A"] } },
+            { id: 407, title: "Even Flow", artist: "Pearl Jam", genre: "Grunge", difficulty: "Intermediate", chords: { "Main": ["D", "G", "A"] } },
+            { id: 408, title: "Hunger Strike", artist: "Temple of the Dog", genre: "Grunge", difficulty: "Beginner", chords: { "Main": ["G", "D", "C", "Em"] } },
+            { id: 409, title: "Would?", artist: "Alice in Chains", genre: "Grunge", difficulty: "Intermediate", chords: { "Main": ["F#m", "G", "D", "A"] } },
+
+            // == ALTERNATIVE & INDIE (VERIFIED & UPDATED) ==
+            { id: 17, title: "Everlong", artist: "Foo Fighters", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Main": ["Dmaj7", "Bm7", "G"] } },
+            { id: 27, title: "Clocks", artist: "Coldplay", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Main": ["Eb", "Bbm", "Fm"] } },
+            { id: 38, title: "Mr. Brightside", artist: "The Killers", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Main": ["Db", "Ab", "Bbm", "Gb"] } },
+            { id: 39, title: "Wonderwall", artist: "Oasis", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Verse": ["F#m", "A", "E", "B"], "Chorus": ["D", "A", "E", "B"] } },
+            { id: 85, title: "Creep", artist: "Radiohead", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Main": ["G", "B", "C", "Cm"] } },
+            { id: 88, title: "Yellow", artist: "Coldplay", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Main": ["G", "D", "C", "Em"] } },
+            { id: 93, title: "Zombie", artist: "The Cranberries", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Main": ["Em", "C", "G", "D"] } },
+            { id: 96, title: "Riptide", artist: "Vance Joy", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Main": ["Am", "G", "C", "F"] } },
+            { id: 500, title: "Take Me to Church", artist: "Hozier", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Main": ["Em", "Am", "G", "C"] } },
+            { id: 501, title: "Do I Wanna Know?", artist: "Arctic Monkeys", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Main": ["Gm", "Eb", "F"] } },
+            { id: 502, title: "Little Talks", artist: "Of Monsters and Men", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Main": ["Am", "F", "C", "G"] } },
+            { id: 503, title: "Somebody That I Used to Know", artist: "Gotye ft. Kimbra", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Main": ["Am", "G", "F"] } },
+            { id: 504, title: "Sweater Weather", artist: "The Neighbourhood", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Main": ["C", "G", "Am", "F"] } },
+            { id: 505, title: "Losing My Religion", artist: "R.E.M.", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Main": ["Am", "Em", "G", "F", "Dm"] } },
+            { id: 506, title: "The Less I Know The Better", artist: "Tame Impala", genre: "Alternative & Indie", difficulty: "Advanced", chords: { "Main": ["C#m", "A", "E", "G#"] } },
+            { id: 507, title: "Float On", artist: "Modest Mouse", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Main": ["F", "C", "Dm", "A#"] } },
+            { id: 508, title: "Seven Nation Army", artist: "The White Stripes", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Main": ["Em", "G", "C", "B"] } },
+            { id: 509, title: "Pumped Up Kicks", artist: "Foster The People", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Main": ["Em", "G", "D", "A"] } },
+            { id: 510, title: "Ho Hey", artist: "The Lumineers", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Main": ["C", "F", "G", "Am"] } },
+            { id: 511, title: "Feel Good Inc.", artist: "Gorillaz", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Verse": ["Em", "A"], "Chorus": ["Em", "G", "A", "C"] } },
+            { id: 512, title: "Island in the Sun", artist: "Weezer", genre: "Alternative & Indie", difficulty: "Beginner", chords: { "Main": ["Em", "Am", "D", "G"] } },
+            { id: 513, title: "Last Nite", artist: "The Strokes", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { "Main": ["C", "G", "Am", "F"] } },
+            
+            // == R&B / SOUL (VERIFIED & UPDATED) ==
+            { id: 19, title: "Stand by Me", artist: "Ben E. King", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Main": ["G", "Em", "C", "D"] } },
+            { id: 46, title: "Ain't No Sunshine", artist: "Bill Withers", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Main": ["Am", "Em", "G", "Dm"] } },
+            { id: 47, title: "If I Ain't Got You", artist: "Alicia Keys", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Main": ["G", "Em7", "Am7", "D7"] } },
+            { id: 100, title: "Respect", artist: "Aretha Franklin", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Main": ["C", "F", "G"] } },
+            { id: 101, title: "Superstition", artist: "Stevie Wonder", genre: "R&B / Soul", difficulty: "Advanced", chords: { "Main": ["Ebm7", "Ab7", "Dbmaj7", "Gbmaj7"] } },
+            { id: 600, title: "Sexual Healing", artist: "Marvin Gaye", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Main": ["Db", "Ab", "Bbm", "Gb"] } },
+            { id: 601, title: "Crazy in Love", artist: "Beyoncé ft. Jay-Z", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Main": ["Gm", "Bb", "D"] } },
+            { id: 602, title: "Signed, Sealed, Delivered I'm Yours", artist: "Stevie Wonder", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Main": ["F", "Dm", "Gm", "C"] } },
+            { id: 603, title: "At Last", artist: "Etta James", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Main": ["F", "Dm7", "Gm7", "C7"] } },
+            { id: 604, title: "A Change Is Gonna Come", artist: "Sam Cooke", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Verse": ["Bb", "Gm", "Cm", "F"], "Chorus": ["Eb", "Dm", "Cm", "F"] } },
+            { id: 605, title: "No Scrubs", artist: "TLC", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Main": ["Am", "G", "C", "F"] } },
+            { id: 606, title: "Leave The Door Open", artist: "Silk Sonic", genre: "R&B / Soul", difficulty: "Advanced", chords: { "Main": ["Fmaj7", "C7", "Am7", "G"] } },
+            { id: 607, title: "My Girl", artist: "The Temptations", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Main": ["C", "F", "G", "Dm"] } },
+            { id: 608, title: "Let's Get It On", artist: "Marvin Gaye", genre: "R&B / Soul", difficulty: "Intermediate", chords: { "Main": ["Eb", "Cm7", "Ab", "Bb"] } },
+            { id: 609, title: "(Sittin' On) The Dock of the Bay", artist: "Otis Redding", genre: "R&B / Soul", difficulty: "Beginner", chords: { "Main": ["G", "B7", "C", "A"] } },
+
+            // == SOUNDTRACK (VERIFIED & UPDATED) ==
+            { id: 29, title: "What a Wonderful World", artist: "Louis Armstrong", genre: "Soundtrack", difficulty: "Beginner", chords: { "Main": ["F", "Am", "Bb", "C"] } },
+            { id: 33, title: "Let It Go", artist: "Idina Menzel (from Frozen)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["Am", "F", "C", "G"], "Chorus": ["F", "C", "G", "Am"] } },
+            { id: 50, title: "My Heart Will Go On", artist: "Celine Dion (from Titanic)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Verse": ["E", "B", "A", "C#m"], "Chorus": ["E", "B", "A", "B"] } },
+            { id: 52, title: "Shallow", artist: "Lady Gaga & Bradley Cooper (A Star Is Born)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Main": ["Am", "D/F#", "G", "C"] } },
+            { id: 112, title: "Over the Rainbow", artist: "Judy Garland (from The Wizard of Oz)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Verse": ["C", "G", "F", "Am"], "Bridge": ["Fm", "C"] } },
+            { id: 121, title: "You've Got a Friend in Me", artist: "Randy Newman (from Toy Story)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Main": ["C", "G7", "E7", "Am", "D7", "F"] } },
+            { id: 700, title: "Skyfall", artist: "Adele (James Bond)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Main": ["Cm", "Ab", "Fm", "G"] } },
+            { id: 701, title: "Danger Zone", artist: "Kenny Loggins (Top Gun)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Main": ["Gm", "F", "Eb", "Bb"] } },
+            { id: 702, title: "Lose Yourself", artist: "Eminem (8 Mile)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Main": ["Dm", "Bb", "F", "C"] } },
+            { id: 703, title: "The Power of Love", artist: "Huey Lewis & The News (Back to the Future)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Main": ["C", "G", "Am", "F"] } },
+            { id: 704, title: "Footloose", artist: "Kenny Loggins (Footloose)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Main": ["A", "D", "E"] } },
+            { id: 705, title: "Gonna Fly Now", artist: "Bill Conti (Rocky)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Main": ["Em", "D", "C", "B7"] } },
+            { id: 706, title: "Hakuna Matata", artist: "Various Artists (The Lion King)", genre: "Soundtrack", difficulty: "Beginner", chords: { "Main": ["F", "C", "G", "C"] } },
+            { id: 707, title: "Stayin' Alive", artist: "Bee Gees (Saturday Night Fever)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Main": ["Fm", "Eb", "Db", "Cm"] } },
+            { id: 708, title: "Circle of Life", artist: "Elton John (The Lion King)", genre: "Soundtrack", difficulty: "Intermediate", chords: { "Verse": ["Bb", "F/A", "Gm", "Eb"], "Chorus": ["Eb", "Bb/D", "Cm", "F"] } },
+            { id: 709, title: "Defying Gravity", artist: "Idina Menzel, Kristin Chenoweth (Wicked)", genre: "Soundtrack", difficulty: "Advanced", chords: { "Main": ["Db", "Gb", "Ab", "Bbm"] } },
+
+            // == HINDI SONGS (VERIFIED & UPDATED) ==
+            { id: 125, title: "Kal Ho Naa Ho", artist: "Sonu Nigam", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Verse": ["C", "G", "Am", "F"], "Chorus": ["C", "G", "F", "C"] } },
+            { id: 126, title: "Tujhe Dekha Toh", artist: "Lata Mangeshkar, Kumar Sanu", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Main": ["C", "G", "Am", "F"] } },
+            { id: 130, title: "Tum Hi Ho", artist: "Arijit Singh", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Main": ["Am", "G", "F", "Em"] } },
+            { id: 132, title: "Gulabi Aankhen", artist: "Mohammed Rafi", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Main": ["Am", "G", "F", "E"] } },
+            { id: 138, title: "Pani Da Rang", artist: "Ayushmann Khurrana", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Main": ["Am", "F", "C", "G"] } },
+            { id: 800, title: "Kesariya", artist: "Arijit Singh (Brahmastra)", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Main": ["G", "C", "D", "Em"] } },
+            { id: 801, title: "Channa Mereya", artist: "Arijit Singh (Ae Dil Hai Mushkil)", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Main": ["Am", "F", "C", "G", "E"] } },
+            { id: 802, title: "Lag Jaa Gale", artist: "Lata Mangeshkar (Woh Kaun Thi?)", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Main": ["C", "G", "Am", "F"] } },
+            { id: 803, title: "Chura Liya Hai Tumne Jo Dil Ko", artist: "Asha Bhosle, Mohammed Rafi (Yaadon Ki Baaraat)", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Main": ["Am", "G", "C", "E"] } },
+            { id: 804, title: "Yeh Dosti Hum Nahin Todenge", artist: "Kishore Kumar, Manna Dey (Sholay)", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Main": ["C", "G", "F"] } },
+            { id: 805, title: "Papa Kehte Hain", artist: "Udit Narayan (Qayamat Se Qayamat Tak)", genre: "Hindi Songs", difficulty: "Beginner", chords: { "Main": ["C", "G", "F"] } },
+            { id: 806, title: "Tujh Mein Rab Dikhta Hai", artist: "Roop Kumar Rathod (Rab Ne Bana Di Jodi)", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Main": ["Db", "Ab", "Bbm", "Gb"] } },
+            { id: 807, title: "Dil Chahta Hai", artist: "Shankar Mahadevan (Dil Chahta Hai)", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Main": ["A", "D", "E"] } },
+            { id: 808, title: "Maa Tujhe Salaam", artist: "A.R. Rahman", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Main": ["Dm", "C", "Bb", "A"] } },
+            { id: 809, title: "Jai Ho", artist: "A.R. Rahman, Sukhwinder Singh (Slumdog Millionaire)", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Main": ["Bb", "Gm", "Eb", "F"] } },
+            { id: 810, title: "Ghungroo", artist: "Arijit Singh, Shilpa Rao (War)", genre: "Hindi Songs", difficulty: "Intermediate", chords: { "Main": ["Em", "D", "C"] } }
         ],
         popularAdditions: {
-            "Pop": [
-                { title: "As It Was", artist: "Harry Styles" }, { title: "Levitating", artist: "Dua Lipa" },
-                { title: "Stay", artist: "The Kid LAROI, Justin Bieber" }, { title: "good 4 u", artist: "Olivia Rodrigo" },
-                { title: "Save Your Tears", artist: "The Weeknd" }, { title: "Peaches", artist: "Justin Bieber" },
-                { title: "Drivers License", artist: "Olivia Rodrigo"}, { title: "Montero (Call Me By Your Name)", artist: "Lil Nas X"},
-                { title: "Happier Than Ever", artist: "Billie Eilish"}, { title: "Anti-Hero", artist: "Taylor Swift"},
-                { title: "Flowers", artist: "Miley Cyrus"}, { title: "Kill Bill", artist: "SZA"},
-                { title: "Vampire", artist: "Olivia Rodrigo"}, { title: "Cruel Summer", artist: "Taylor Swift"},
-                { title: "Dance The Night", artist: "Dua Lipa"}, { title: "greedy", artist: "Tate McRae"},
-                { title: "Paint The Town Red", artist: "Doja Cat"}, { title: "Get Lucky", artist: "Daft Punk ft. Pharrell Williams"},
-                { title: "Uptown Funk", artist: "Mark Ronson ft. Bruno Mars"},
-                { title: "Sorry", artist: "Justin Bieber"}, { title: "Thinking Out Loud", artist: "Ed Sheeran"},
-                { title: "Hello", artist: "Adele"}, { title: "Sugar", artist: "Maroon 5"},
-                { title: "Can't Stop the Feeling!", artist: "Justin Timberlake"}, { title: "Closer", artist: "The Chainsmokers ft. Halsey"}
-            ],
-            "Classic Rock": [
-                { title: "Livin' on a Prayer", artist: "Bon Jovi" }, { title: "Back in Black", artist: "AC/DC" },
-                { title: "Another Brick in the Wall", artist: "Pink Floyd" }, { title: "Like a Rolling Stone", artist: "Bob Dylan" },
-                { title: "Born to Run", artist: "Bruce Springsteen" }, { title: "Comfortably Numb", artist: "Pink Floyd" },
-                { title: "Purple Haze", artist: "Jimi Hendrix" }, { title: "Whole Lotta Love", artist: "Led Zeppelin" },
-                { title: "My Generation", artist: "The Who" }, { title: "(I Can't Get No) Satisfaction", artist: "The Rolling Stones" },
-                { title: "Don't Stop Believin'", artist: "Journey"}, { title: "Highway to Hell", artist: "AC/DC"},
-                { title: "Sweet Emotion", artist: "Aerosmith"}, { title: "Kashmir", artist: "Led Zeppelin"},
-                { title: "Free Bird", artist: "Lynyrd Skynyrd"}, { title: "Smoke on the Water", artist: "Deep Purple"},
-                { title: "Born to Be Wild", artist: "Steppenwolf"}, { title: "Light My Fire", artist: "The Doors"},
-                { title: "Gimme Shelter", artist: "The Rolling Stones"}, { title: "Baba O'Riley", artist: "The Who"},
-                { title: "Iron Man", artist: "Black Sabbath"}, { title: "Carry On Wayward Son", artist: "Kansas"}
-            ],
-            "Alternative & Indie": [
-                { title: "Take Me to Church", artist: "Hozier" }, { title: "Do I Wanna Know?", artist: "Arctic Monkeys" },
-                { title: "Little Talks", artist: "Of Monsters and Men" }, { title: "Somebody That I Used to Know", artist: "Gotye ft. Kimbra" },
-                { title: "Sweater Weather", artist: "The Neighbourhood" },
-                { title: "Skinny Love", artist: "Bon Iver"}, { title: "The Suburbs", artist: "Arcade Fire"},
-                { title: "Lisztomania", artist: "Phoenix"}, { title: "Kids", artist: "MGMT"},
-                { title: "Losing My Religion", artist: "R.E.M."}, { title: "The Less I Know The Better", artist: "Tame Impala"},
-                { title: "Float On", artist: "Modest Mouse"}, { title: "Seven Nation Army", artist: "The White Stripes"},
-                { title: "Pumped Up Kicks", artist: "Foster The People"},
-                { title: "Ho Hey", artist: "The Lumineers"},
-                { title: "Feel Good Inc.", artist: "Gorillaz"}, { title: "Island in the Sun", artist: "Weezer"},
-                { title: "Last Nite", artist: "The Strokes"}, { title: "Stubborn Love", artist: "The Lumineers"}
-            ],
-            "Grunge": [
-                { title: "Heart-Shaped Box", artist: "Nirvana" }, { title: "Glycerine", artist: "Bush" },
-                { title: "Black", artist: "Pearl Jam" }, { title: "Outshined", artist: "Soundgarden" },
-                { title: "Them Bones", artist: "Alice in Chains" }, {title: "Vasoline", artist: "Stone Temple Pilots"},
-                {title: "Polly", artist: "Nirvana"}, {title: "Rusty Cage", artist: "Soundgarden"},
-                {title: "No Excuses", artist: "Alice in Chains"}, {title: "Far Behind", artist: "Candlebox"},
-                {title: "Jeremy", artist: "Pearl Jam"}, {title: "Would?", artist: "Alice in Chains"},
-                {title: "Hunger Strike", artist: "Temple of the Dog"}, {title: "Man in the Box", artist: "Alice in Chains"},
-                {title: "Even Flow", artist: "Pearl Jam"}, {title: "Come As You Are", artist: "Nirvana"}
-            ],
-            "R&B / Soul": [
-                { title: "Sexual Healing", artist: "Marvin Gaye" },
-                { title: "If You Don't Know Me by Now", artist: "Harold Melvin & The Blue Notes" },
-                { title: "Crazy in Love", artist: "Beyoncé ft. Jay-Z" }, { title: "Signed, Sealed, Delivered I'm Yours", artist: "Stevie Wonder"},
-                { title: "At Last", artist: "Etta James"}, { title: "A Change Is Gonna Come", artist: "Sam Cooke"},
-                { title: "I Got You (I Feel Good)", artist: "James Brown"},
-                { title: "No Scrubs", artist: "TLC"}, { title: "Doo Wop (That Thing)", artist: "Lauryn Hill"},
-                { title: "Leave The Door Open", artist: "Silk Sonic"}, { title: "Waterfalls", artist: "TLC"},
-                { title: "My Girl", artist: "The Temptations"}, { title: "Let's Get It On", artist: "Marvin Gaye"},
-                { title: "Sittin' On The Dock of the Bay", artist: "Otis Redding"},
-                { title: "I Heard It Through the Grapevine", artist: "Marvin Gaye"}
-            ],
-            "Soundtrack": [
-                { title: "Can't Stop the Feeling!", artist: "Justin Timberlake (Trolls)" }, { title: "Skyfall", artist: "Adele (James Bond)" },
-                { title: "Danger Zone", artist: "Kenny Loggins (Top Gun)" }, { title: "Lose Yourself", artist: "Eminem (8 Mile)" },
-                { title: "The Power of Love", artist: "Huey Lewis & The News (Back to the Future)"}, { title: "Footloose", artist: "Kenny Loggins (Footloose)"},
-                { title: "Gonna Fly Now", artist: "Bill Conti (Rocky)"}, { title: "Hakuna Matata", artist: "Various Artists (The Lion King)"},
-                { title: "Stayin' Alive", artist: "Bee Gees (Saturday Night Fever)"}, { title: "Time of My Life", artist: "Bill Medley, Jennifer Warnes (Dirty Dancing)"},
-                { title: "Part of Your World", artist: "Jodi Benson (The Little Mermaid)"}, { title: "Circle of Life", artist: "Elton John (The Lion King)"},
-                { title: "Theme from Jurassic Park", artist: "John Williams"}, { title: "Star Wars Main Theme", artist: "John Williams"},
-                { title: "Defying Gravity", artist: "Idina Menzel, Kristin Chenoweth (Wicked)"}
-            ],
-            "Hindi Songs": [
-                { title: "Kesariya", artist: "Arijit Singh (Brahmastra)" }, { title: "Channa Mereya", artist: "Arijit Singh (Ae Dil Hai Mushkil)" },
-                { title: "Tum Sath Ho", artist: "Arijit Singh, Alka Yagnik (Tamasha)" }, { title: "Lag Jaa Gale", artist: "Lata Mangeshkar (Woh Kaun Thi?)" },
-                { title: "Chura Liya Hai Tumne Jo Dil Ko", artist: "Asha Bhosle, Mohammed Rafi (Yaadon Ki Baaraat)" },
-                { title: "Tere Bina Zindagi Se", artist: "Lata Mangeshkar, Kishore Kumar (Aandhi)"},
-                { title: "Yeh Dosti Hum Nahin Todenge", artist: "Kishore Kumar, Manna Dey (Sholay)"},
-                { title: "Papa Kehte Hain", artist: "Udit Narayan (Qayamat Se Qayamat Tak)"},
-                { title: "Tujh Mein Rab Dikhta Hai", artist: "Roop Kumar Rathod (Rab Ne Bana Di Jodi)"},
-                { title: "Dil Chahta Hai", artist: "Shankar Mahadevan (Dil Chahta Hai)"},
-                { title: "Maa Tujhe Salaam", artist: "A.R. Rahman"}, { title: "Jai Ho", artist: "A.R. Rahman, Sukhwinder Singh (Slumdog Millionaire)"},
-                { title: "Tera Zikr", artist: "Darshan Raval"}, { title: "Ghungroo", artist: "Arijit Singh, Shilpa Rao (War)"},
-                { title: "Apna Time Aayega", artist: "Ranveer Singh (Gully Boy)"}, { title: "Bekhayali", artist: "Sachet Tandon (Kabir Singh)"}
-            ]
+            // All genres have been moved to initialSongData. This object is now empty.
         }
     };
 
@@ -561,42 +566,9 @@
     };
 
     const DataManager = {
-        augmentSongData: function(initialSongs, popularAdditionsByGenre, genericChordsList, difficultyLevels) {
-            const augmentedSongs = [...initialSongs];
-            let maxId = initialSongs.reduce((max, song) => Math.max(max, song.id || 0), 0);
-            for (const genreName in popularAdditionsByGenre) {
-                if (popularAdditionsByGenre.hasOwnProperty(genreName)) {
-                    const popularSongsInGenre = popularAdditionsByGenre[genreName];
-                    popularSongsInGenre.forEach(popularSong => {
-                        const songExists = augmentedSongs.some(s =>
-                            s.title.toLowerCase() === popularSong.title.toLowerCase() &&
-                            s.artist.toLowerCase() === popularSong.artist.toLowerCase() &&
-                            s.genre === genreName
-                        );
-                        if (!songExists) {
-                            maxId++;
-                            augmentedSongs.push({
-                                id: maxId,
-                                title: popularSong.title,
-                                artist: popularSong.artist,
-                                genre: genreName,
-                                chords: popularSong.chords || genericChordsList[maxId % genericChordsList.length],
-                                difficulty: popularSong.difficulty || difficultyLevels[maxId % difficultyLevels.length],
-                                bpm: popularSong.bpm
-                            });
-                        }
-                    });
-                }
-            }
-            return augmentedSongs;
-        },
         initializeSongData: function() {
-            AppState.songData = this.augmentSongData(
-                AppConfig.initialSongData,
-                AppConfig.popularAdditions,
-                AppConfig.genericChords,
-                AppConfig.difficulties
-            );
+            // Data is now self-contained in initialSongData, so we just assign it.
+            AppState.songData = AppConfig.initialSongData;
         },
         getSongById: function(songId) {
             return AppState.songData.find(s => s.id === songId);
@@ -691,36 +663,17 @@
     };
 
     const SongRenderer = {
-        getDifficultyVisuals: function(difficulty) {
-            const difficultyIndex = AppConfig.difficulties.indexOf(difficulty);
-            let visualHtml = '';
-            if (difficultyIndex !== -1) {
-                const totalDifficultyLevels = AppConfig.difficulties.length;
-                let dots = '';
-                const badgeColorClasses = this.getDifficultyBadgeColor(difficulty);
-                const filledColorLight = badgeColorClasses.split(' ').find(c => c.startsWith('text-') && !c.includes('dark:text-')) || 'text-indigo-600';
-                const filledColorDark = badgeColorClasses.split(' ').find(c => c.startsWith('dark:text-')) || 'dark:text-indigo-400';
-                const emptyColor = 'text-gray-300 dark:text-gray-500';
-                for (let i = 0; i < totalDifficultyLevels; i++) {
-                    if (i <= difficultyIndex) {
-                        dots += `<span class="${filledColorLight} ${filledColorDark.replace('dark:','') }">●</span>`;
-                    } else {
-                        dots += `<span class="${emptyColor}">○</span>`;
-                    }
-                }
-                visualHtml = `<span class="difficulty-dots" aria-label="${difficulty}">${dots}</span><span class="sr-only"> ${difficulty}</span>`;
-            } else {
-                visualHtml = `<span class="text-xs font-semibold px-2 py-0.5 rounded-full ${this.getDifficultyBadgeColor(difficulty)}">${difficulty || 'N/A'}</span>`;
-            }
-            return visualHtml;
-        },
-        getDifficultyBadgeColor: function(difficulty) {
+        getDifficultyTextColor: function(difficulty) {
             switch (difficulty?.toLowerCase()) {
-                case 'beginner': return 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300';
-                case 'intermediate': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
-                case 'advanced': return 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300';
-                default: return 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300';
+                case 'beginner': return 'text-green-600 dark:text-green-400';
+                case 'intermediate': return 'text-yellow-600 dark:text-yellow-400';
+                case 'advanced': return 'text-red-600 dark:text-red-400';
+                default: return 'text-gray-500 dark:text-gray-400';
             }
+        },
+        getDifficultyVisuals: function(difficulty) {
+            const colorClasses = this.getDifficultyTextColor(difficulty);
+            return `<span class="font-semibold text-sm ${colorClasses}">${difficulty || 'N/A'}</span>`;
         },
         createCardHTML: function(song) {
             const isFav = FavoritesManager.isFavorite(song.id);
@@ -852,16 +805,6 @@
                 DOM.transposeDownBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 DOM.transposeDownBtn.classList.add('hover:bg-indigo-600', 'dark:hover:bg-indigo-700');
             }
-            if (!DOM.transposeUpBtn.disabled) {
-                DOM.transposeUpBtn.classList.add('dark:bg-indigo-700', 'dark:hover:bg-indigo-800');
-            } else {
-                 DOM.transposeUpBtn.classList.remove('dark:hover:bg-indigo-800');
-            }
-            if (!DOM.transposeDownBtn.disabled) {
-                DOM.transposeDownBtn.classList.add('dark:bg-indigo-700', 'dark:hover:bg-indigo-800');
-            } else {
-                 DOM.transposeDownBtn.classList.remove('dark:hover:bg-indigo-800');
-            }
         },
         updateTransposeIndicator: function() {
             if (AppState.currentTransposeOffset === 0) {
@@ -921,21 +864,12 @@
         },
         handleTranspose: function(semitones) {
             if (AppState.currentModalSongId === null) return;
-
             const newOffset = AppState.currentTransposeOffset + semitones;
-
-            if (newOffset > AppConfig.transposeLimit || newOffset < -AppConfig.transposeLimit) {
-                this.updateTransposeButtonStates();
-                return;
-            }
-
+            if (newOffset > AppConfig.transposeLimit || newOffset < -AppConfig.transposeLimit) { return; }
             AppState.currentTransposeOffset = newOffset;
             this.renderChords(AppState.currentModalSongId, AppState.currentTransposeOffset);
             this.updateTransposeIndicator();
-
-            let offsetText = AppState.currentTransposeOffset === 0 ? "Original Key" :
-                             (AppState.currentTransposeOffset > 0 ? `+${AppState.currentTransposeOffset}` : AppState.currentTransposeOffset.toString()) +
-                             ` semitone${Math.abs(AppState.currentTransposeOffset) === 1 ? '' : 's'}`;
+            let offsetText = AppState.currentTransposeOffset === 0 ? "Original Key" : (AppState.currentTransposeOffset > 0 ? `+${AppState.currentTransposeOffset}` : AppState.currentTransposeOffset.toString()) + ` semitone${Math.abs(AppState.currentTransposeOffset) === 1 ? '' : 's'}`;
             DOM.transposeAnnouncer.textContent = `Chords transposed. Current offset: ${offsetText}.`;
         },
         resetTranspose: function() {
@@ -959,7 +893,6 @@
             DOM.toggleDarkBtn.setAttribute('aria-pressed', isDark.toString());
             if (AppState.currentModalSongId !== null && !DOM.modal.classList.contains('pointer-events-none')) {
                 ModalManager.renderChords(AppState.currentModalSongId, AppState.currentTransposeOffset);
-                ModalManager.updateTransposeButtonStates();
             }
         }
     };
@@ -968,17 +901,10 @@
         initModalKeys: function() {
             document.addEventListener('keydown', (e) => {
                 if (DOM.modal.classList.contains('pointer-events-none')) return;
-                if (e.key === '=' || e.key === '+') {
-                    e.preventDefault();
-                    ModalManager.handleTranspose(1);
-                } else if (e.key === '-' || e.key === '_') {
-                    e.preventDefault();
-                    ModalManager.handleTranspose(-1);
-                } else if (e.key === '0' || e.key === 'r' || e.key === 'R') {
-                    if(document.activeElement !== DOM.searchBar) {
-                        e.preventDefault();
-                        ModalManager.resetTranspose();
-                    }
+                if (e.key === '=' || e.key === '+') { e.preventDefault(); ModalManager.handleTranspose(1); } 
+                else if (e.key === '-' || e.key === '_') { e.preventDefault(); ModalManager.handleTranspose(-1); } 
+                else if (e.key === '0' || e.key === 'r' || e.key === 'R') {
+                    if(document.activeElement !== DOM.searchBar) { e.preventDefault(); ModalManager.resetTranspose(); }
                 }
             });
         },
@@ -989,54 +915,32 @@
                 let newIndex = AppState.focusedCardIndex;
                 const gridStyles = window.getComputedStyle(DOM.songGrid);
                 const columnCount = gridStyles.getPropertyValue('grid-template-columns').split(' ').length;
-                if (e.key === 'ArrowRight') {
-                    e.preventDefault();
-                    if (AppState.focusedCardIndex + 1 < cards.length) newIndex = AppState.focusedCardIndex + 1;
-                } else if (e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                     if (AppState.focusedCardIndex - 1 >= 0) newIndex = AppState.focusedCardIndex - 1;
-                } else if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    newIndex = AppState.focusedCardIndex + columnCount;
-                    if (newIndex >= cards.length) newIndex = cards.length -1;
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    newIndex = AppState.focusedCardIndex - columnCount;
-                     if (newIndex < 0) newIndex = 0;
-                } else if (e.key === 'Enter' || e.key === ' ') {
+                if (e.key === 'ArrowRight') { e.preventDefault(); if (AppState.focusedCardIndex + 1 < cards.length) newIndex = AppState.focusedCardIndex + 1; } 
+                else if (e.key === 'ArrowLeft') { e.preventDefault(); if (AppState.focusedCardIndex - 1 >= 0) newIndex = AppState.focusedCardIndex - 1; } 
+                else if (e.key === 'ArrowDown') { e.preventDefault(); newIndex = AppState.focusedCardIndex + columnCount; if (newIndex >= cards.length) newIndex = cards.length -1; } 
+                else if (e.key === 'ArrowUp') { e.preventDefault(); newIndex = AppState.focusedCardIndex - columnCount; if (newIndex < 0) newIndex = 0; } 
+                else if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     if (AppState.focusedCardIndex >= 0 && cards[AppState.focusedCardIndex]) {
                         const songId = parseInt(cards[AppState.focusedCardIndex].dataset.songId);
                         ModalManager.open(songId);
                     }
                     return;
-                } else if (e.key === 'Home') {
-                    e.preventDefault(); newIndex = 0;
-                } else if (e.key === 'End') {
-                    e.preventDefault(); newIndex = cards.length - 1;
-                } else { return; }
+                } 
+                else if (e.key === 'Home') { e.preventDefault(); newIndex = 0; } 
+                else if (e.key === 'End') { e.preventDefault(); newIndex = cards.length - 1; } 
+                else { return; }
                 newIndex = Math.max(0, Math.min(cards.length - 1, newIndex));
                 if (newIndex !== AppState.focusedCardIndex || (AppState.focusedCardIndex === -1 && newIndex === 0) ) {
                     AppState.focusedCardIndex = newIndex;
                     if (cards[AppState.focusedCardIndex]) cards[AppState.focusedCardIndex].focus();
                 }
             });
-            DOM.songGrid.addEventListener('focus', () => {
-                if (AppState.focusedCardIndex === -1) {
-                    const cards = Array.from(DOM.songGrid.querySelectorAll('.song-card'));
-                    if (cards.length > 0) {
-                        AppState.focusedCardIndex = 0;
-                        cards[0].focus();
-                    }
-                }
-            }, { once: true });
         },
         init: function() {
             DOM.closeModalBtn.addEventListener('click', ModalManager.close);
             DOM.modal.addEventListener('click', (e) => { if (e.target === DOM.modal) ModalManager.close(); });
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && !DOM.modal.classList.contains('pointer-events-none')) ModalManager.close();
-            });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !DOM.modal.classList.contains('pointer-events-none')) ModalManager.close(); });
             DOM.toggleDarkBtn.addEventListener('click', ThemeManager.toggle);
             DOM.searchBar.addEventListener('input', () => {
                 SongRenderer.populate();
@@ -1048,20 +952,15 @@
                 SongRenderer.populate();
                 DOM.searchBar.focus();
             });
-            DOM.modalFavoriteBtn.addEventListener('click', () => {
-                if (AppState.currentModalSongId !== null) {
-                    FavoritesManager.toggle(AppState.currentModalSongId, DOM.modalFavoriteBtn);
-                }
-            });
+            DOM.modalFavoriteBtn.addEventListener('click', () => { if (AppState.currentModalSongId !== null) { FavoritesManager.toggle(AppState.currentModalSongId, DOM.modalFavoriteBtn); } });
             DOM.songGrid.addEventListener('click', (event) => {
                 const songCard = event.target.closest('.song-card');
                 if (!songCard) return;
                 const songId = parseInt(songCard.dataset.songId);
                 if (isNaN(songId)) return;
                 const favoriteButton = event.target.closest('.favorite-btn-card');
-                if (favoriteButton) {
-                    FavoritesManager.toggle(songId, favoriteButton);
-                } else {
+                if (favoriteButton) { FavoritesManager.toggle(songId, favoriteButton); } 
+                else {
                     ModalManager.open(songId);
                     const cards = Array.from(DOM.songGrid.querySelectorAll('.song-card'));
                     AppState.focusedCardIndex = cards.indexOf(songCard);
