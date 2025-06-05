@@ -208,28 +208,26 @@
 
 <script>
     const AppConfig = {
-        genres: ['All', 'My Favorites', 'Recently Viewed', 'Rock', 'Pop', 'Alternative & Indie', 'Grunge', 'R&B / Soul', 'Soundtrack', 'Hindi'],
+        genres: ['All', 'My Favorites', 'Recently Viewed', 'Rock', 'Pop', 'Alternative & Indie', 'Grunge', 'R&B / Soul', 'Hindi'],
         difficulties: ["Beginner", "Intermediate", "Advanced"],
         maxRecentlyViewed: 15,
         notesSharp: ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
         notesFlat:  ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
-        chordTypes: { // Added more chord types for better parsing
+        chordTypes: { 
             '': [0, 4, 7], 'm': [0, 3, 7], 'maj': [0, 4, 7], '7': [0, 4, 7, 10], 'maj7': [0, 4, 7, 11], 'm7': [0, 3, 7, 10],
             'dim': [0, 3, 6], 'dim7': [0, 3, 6, 9], 'aug': [0, 4, 8], 'sus4': [0, 5, 7], 'sus2': [0, 2, 7], '6': [0, 4, 7, 9],
             'm6': [0, 3, 7, 9], 'add9': [0, 4, 7, 14], 'madd9': [0, 3, 7, 14], 'maj9': [0, 4, 7, 11, 14], 'm9': [0, 3, 7, 10, 14], '7b5': [0, 4, 6, 10],
             'm7b5': [0, 3, 6, 10], '7sus4': [0, 5, 7, 10], 'sus': [0, 5, 7], '9': [0, 4, 7, 10, 14], '11': [0, 4, 7, 10, 14, 17], '13': [0, 4, 7, 10, 14, 17, 21],
-            'mmaj7': [0, 3, 7, 11], // minor-major seventh
-            '7#9': [0, 4, 7, 10, 15], // dominant seventh sharp ninth
-            '7b9': [0, 4, 7, 10, 13], // dominant seventh flat ninth
-            'dim(maj7)': [0, 3, 6, 11], // diminished major seventh
-            'm(maj7)': [0, 3, 7, 11], // minor major seventh
-             // Simple power chord (root and fifth) - might not always be displayed with piano keys fully
+            'mmaj7': [0, 3, 7, 11], 
+            '7#9': [0, 4, 7, 10, 15], 
+            '7b9': [0, 4, 7, 10, 13], 
+            'dim(maj7)': [0, 3, 6, 11], 
+            'm(maj7)': [0, 3, 7, 11], 
             '5': [0, 7],
-            // Common variations
             'maj7#11': [0, 4, 7, 11, 18],
             'm11': [0, 3, 7, 10, 14, 17],
-            'Cadd9': [0, 4, 7, 14], // Specific for C, but can be generalized if parser handles 'add'
-            'G/B': [0,4,7], // Example of slash chord, parser needs to handle bass note
+            'Cadd9': [0, 4, 7, 14], 
+            'G/B': [0,4,7], 
             'Am/G': [0,3,7],
             'D/F#': [0,4,7]
         },
@@ -258,11 +256,11 @@
             { id: 50, title: "R U Mine?", artist: "Arctic Monkeys", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { Main: ["F#m", "Bm", "E", "A", "D"] }, audioSrc: "audio/r_u_mine_arctic_monkeys.mp3" },
             { id: 105, title: "Why'd You Only Call Me When You're High?", artist: "Arctic Monkeys", genre: "Alternative & Indie", difficulty: "Intermediate", chords: { Main: ["F#m", "C#m", "D", "A", "E"] }, audioSrc: "audio/whyd_you_only_call_me_when_youre_high_arctic_monkeys.mp3" },
             { id: 106, title: "505", artist: "Arctic Monkeys", genre: "Alternative & Indie", difficulty: "Beginner", chords: { Main: ["Dm", "Am", "Em", "G"] }, audioSrc: "audio/505_arctic_monkeys.mp3" },
-            { id: 130, title: "Agar Tum Saath Ho (Tamasha)", artist: "Arijit Singh, Alka Yagnik", genre: "Soundtrack", difficulty: "Intermediate", chords: { Main: ["Am", "G", "F", "C", "E"] }, audioSrc: "audio/agar_tum_saath_ho_tamasha.mp3" },
-            { id: 131, title: "Ae Dil Hai Mushkil", artist: "Arijit Singh", genre: "Soundtrack", difficulty: "Intermediate", chords: { Main: ["Am", "G", "F", "E", "Dm", "C"] }, audioSrc: "audio/ae_dil_hai_mushkil_arijit_singh.mp3" },
-            { id: 83, title: "Tum Hi Ho", artist: "Arijit Singh", genre: "Soundtrack", difficulty: "Beginner", chords: { Main: ["Em", "C", "G", "D", "Am"] }, audioSrc: "audio/tum_hi_ho_arijit_singh.mp3" },
-            { id: 90, title: "Kabira (Encore)", artist: "Harshdeep Kaur, Arijit Singh", genre: "Soundtrack", difficulty: "Intermediate", chords: { Main: ["D", "Bm", "G", "A", "Em"] }, audioSrc: "audio/kabira_encore_harshdeep_arijit.mp3" },
-            { id: 91, title: "Gerua", artist: "Arijit Singh, Antara Mitra", genre: "Soundtrack", difficulty: "Intermediate", chords: { Main: ["G", "Em", "C", "D", "Am"] }, audioSrc: "audio/gerua_arijit_singh_antara_mitra.mp3" },
+            { id: 130, title: "Agar Tum Saath Ho (Tamasha)", artist: "Arijit Singh, Alka Yagnik", genre: "Hindi", difficulty: "Intermediate", chords: { Main: ["Am", "G", "F", "C", "E"] }, audioSrc: "audio/agar_tum_saath_ho_tamasha.mp3" },
+            { id: 131, title: "Ae Dil Hai Mushkil", artist: "Arijit Singh", genre: "Hindi", difficulty: "Intermediate", chords: { Main: ["Am", "G", "F", "E", "Dm", "C"] }, audioSrc: "audio/ae_dil_hai_mushkil_arijit_singh.mp3" },
+            { id: 83, title: "Tum Hi Ho", artist: "Arijit Singh", genre: "Hindi", difficulty: "Beginner", chords: { Main: ["Em", "C", "G", "D", "Am"] }, audioSrc: "audio/tum_hi_ho_arijit_singh.mp3" },
+            { id: 90, title: "Kabira (Encore)", artist: "Harshdeep Kaur, Arijit Singh", genre: "Hindi", difficulty: "Intermediate", chords: { Main: ["D", "Bm", "G", "A", "Em"] }, audioSrc: "audio/kabira_encore_harshdeep_arijit.mp3" },
+            { id: 91, title: "Gerua", artist: "Arijit Singh, Antara Mitra", genre: "Hindi", difficulty: "Intermediate", chords: { Main: ["G", "Em", "C", "D", "Am"] }, audioSrc: "audio/gerua_arijit_singh_antara_mitra.mp3" },
             { id: 157, title: "Tujhe Kitna Chahne Lage (Kabir Singh)", artist: "Arijit Singh", genre: "Hindi", difficulty: "Beginner", chords: { Main: ["Am", "G", "C", "F", "Dm", "E"] }, audioSrc: "audio/tujhe_kitna_chahne_lage_arijit_singh.mp3" },
             { id: 158, title: "Shayad (Love Aaj Kal)", artist: "Arijit Singh", genre: "Hindi", difficulty: "Beginner", chords: { Main: ["C", "G", "Am", "F", "Dm"] }, audioSrc: "audio/shayad_love_aaj_kal_arijit_singh.mp3" },
             { id: 160, title: "Hawayein (Jab Harry Met Sejal)", artist: "Arijit Singh", genre: "Hindi", difficulty: "Beginner", chords: { Main: ["G", "D", "Em", "C", "Am"] }, audioSrc: "audio/hawayein_arijit_singh.mp3" },
@@ -429,7 +427,7 @@
             { id: 16, title: "Californication", artist: "Red Hot Chili Peppers", genre: "Rock", difficulty: "Intermediate", chords: { Main: ["Am", "G", "C", "F", "Dm"] }, audioSrc: "audio/californication_red_hot_chili_peppers.mp3" },
             { id: 164, title: "Bekhayali", artist: "Sachet Tandon", genre: "Hindi", difficulty: "Intermediate", chords: { Main: ["Am", "G", "F", "E", "C"] }, audioSrc: "audio/bekhayali_sachet_tandon.mp3" },
             { id: 88, title: "Dil Chahta Hai", artist: "Shankar Mahadevan", genre: "Hindi", difficulty: "Intermediate", chords: { Main: ["A", "D", "E", "F#m", "Bm"] }, audioSrc: "audio/dil_chahta_hai_shankar_mahadevan.mp3" },
-            { id: 85, title: "Kal Ho Naa Ho", artist: "Sonu Nigam", genre: "Soundtrack", difficulty: "Intermediate", chords: { Main: ["D", "G", "A", "Bm", "Em"] }, audioSrc: "audio/kal_ho_naa_ho_sonu_nigam.mp3" },
+            { id: 85, title: "Kal Ho Naa Ho", artist: "Sonu Nigam", genre: "Hindi", difficulty: "Intermediate", chords: { Main: ["D", "G", "A", "Bm", "Em"] }, audioSrc: "audio/kal_ho_naa_ho_sonu_nigam.mp3" },
             { id: 92, title: "Chaiyya Chaiyya", artist: "Sukhwinder Singh, Sapna Awasthi", genre: "Hindi", difficulty: "Intermediate", chords: { Main: ["Am", "G", "F", "E"] }, audioSrc: "audio/chaiyya_chaiyya_sukhwinder_sapna.mp3" },
             { id: 72, title: "Love Story", artist: "Taylor Swift", genre: "Pop", difficulty: "Beginner", chords: { Main: ["C", "G", "Am", "F"] }, audioSrc: "audio/love_story_taylor_swift.mp3" },
             { id: 73, title: "Blank Space", artist: "Taylor Swift", genre: "Pop", difficulty: "Beginner", chords: { Main: ["D", "A", "Bm", "G"] }, audioSrc: "audio/blank_space_taylor_swift.mp3" },
@@ -462,7 +460,7 @@
             { id: 68, title: "(I Can't Get No) Satisfaction", artist: "The Rolling Stones", genre: "Rock", difficulty: "Beginner", chords: { Main: ["E", "A", "D", "B7"] }, audioSrc: "audio/i_cant_get_no_satisfaction_the_rolling_stones.mp3" },
             { id: 69, title: "Angie", artist: "The Rolling Stones", genre: "Rock", difficulty: "Beginner", chords: { Main: ["Am", "E7", "G", "F", "C"] }, audioSrc: "audio/angie_the_rolling_stones.mp3" },
             { id: 17, title: "Seven Nation Army", artist: "The White Stripes", genre: "Rock", difficulty: "Beginner", chords: { Main: ["Em", "G", "C", "B7"] }, audioSrc: "audio/seven_nation_army_the_white_stripes.mp3" },
-            { id: 84, title: "Pehla Nasha", artist: "Udit Narayan, Sadhana Sargam", genre: "Soundtrack", difficulty: "Beginner", chords: { Main: ["C", "G", "Am", "F", "Dm"] }, audioSrc: "audio/pehla_nasha_udit_narayan_sadhana_sargam.mp3" },
+            { id: 84, title: "Pehla Nasha", artist: "Udit Narayan, Sadhana Sargam", genre: "Hindi", difficulty: "Beginner", chords: { Main: ["C", "G", "Am", "F", "Dm"] }, audioSrc: "audio/pehla_nasha_udit_narayan_sadhana_sargam.mp3" },
             { id: 62, title: "Fall to Pieces", artist: "Velvet Revolver", genre: "Rock", difficulty: "Intermediate", chords: { Main: ["G", "D", "Em", "C", "Am"] }, audioSrc: "audio/fall_to_pieces_velvet_revolver.mp3" },
             { id: 63, title: "Slither", artist: "Velvet Revolver", genre: "Rock", difficulty: "Intermediate", chords: { Main: ["Dm", "C", "G", "Bb", "A"] }, audioSrc: "audio/slither_velvet_revolver.mp3" },
             { id: 121, title: "Set Me Free", artist: "Velvet Revolver", genre: "Rock", difficulty: "Intermediate", chords: { Main: ["Dm", "C", "G", "Bb", "A"] }, audioSrc: "audio/set_me_free_velvet_revolver.mp3" }
